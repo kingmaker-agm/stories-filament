@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Forms\Components\Actions\OpenUrlAction;
+use App\Filament\Resources\StoryResource\RelationManagers\RatingTagsRelationManager;
 use App\Filament\Resources\StorySeriesResource\Pages;
 use App\Filament\Resources\StorySeriesResource\RelationManagers;
 use App\Models\StorySeries;
@@ -61,6 +62,7 @@ class StorySeriesResource extends Resource
     {
         return [
             RelationManagers\StoriesRelationManager::class,
+            RatingTagsRelationManager::class,
         ];
     }
 
@@ -99,6 +101,8 @@ class StorySeriesResource extends Resource
     public static function getTitleTableColumn(): Tables\Columns\TextColumn
     {
         return Tables\Columns\TextColumn::make('title')
+            ->searchable()
+            ->sortable()
             ->wrap()
             ->limit(100);
     }
@@ -106,6 +110,7 @@ class StorySeriesResource extends Resource
     public static function getNumberOfStoriesTableColumn(): Tables\Columns\TextColumn
     {
         return Tables\Columns\TextColumn::make('number_of_stories')
+            ->wrap()
             ->label('Number of Stories')
             ->formatStateUsing(fn(StorySeries $record) => (string) $record->stories()->count());
     }

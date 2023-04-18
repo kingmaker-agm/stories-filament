@@ -10,6 +10,7 @@ use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Resources\Form;
+use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
@@ -44,6 +45,7 @@ class StoryResource extends Resource
         return $table
             ->columns([
                 self::getTitleTableColumn(),
+                self::getSeriesTableColumn(),
                 self::getBodyTableColumn(),
             ])
             ->actions([
@@ -60,7 +62,8 @@ class StoryResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\SeriesRelationManager::class
+            RelationManagers\SeriesRelationManager::class,
+            RelationManagers\RatingTagsRelationManager::class,
         ];
     }
 
@@ -77,6 +80,8 @@ class StoryResource extends Resource
     public static function getTitleTableColumn(): Tables\Columns\TextColumn
     {
         return Tables\Columns\TextColumn::make('title')
+            ->sortable()
+            ->searchable()
             ->wrap()
             ->limit(100);
     }
@@ -85,6 +90,7 @@ class StoryResource extends Resource
     {
         return Tables\Columns\TextColumn::make('body')
             ->formatStateUsing(fn(?string $state) => empty($state) ? '' : Str::words(strip_tags($state), 30))
+            ->visibleFrom('lg')
             ->wrap();
     }
 
@@ -117,5 +123,22 @@ class StoryResource extends Resource
     {
         return Forms\Components\RichEditor::make('body')
             ->required();
+    }
+
+    public static function getSeriesTableColumn(): Tables\Columns\IconColumn
+    {
+        return Tables\Columns\IconColumn::make('story_series_id')
+            ->label('Series')
+            ->visibleFrom('md')
+            ->grow(false)
+            ->url(fn ($record) => $record->story_series_id ? StorySeriesResource::getUrl('view', ['record' => $record->story_series_id]) : null)
+            ->options([
+                'heroicon-o-check' => fn($state) => !!$state,
+                'heroicon-o-minus' => fn($state) => $state === null
+            ])
+            ->colors([
+                'success' => fn($state) => !!$state,
+                'danger' => fn($state) => $state === null
+            ]);
     }
 }

@@ -22,8 +22,11 @@ class Story extends Model
         return $this->belongsTo(StorySeries::class, 'story_series_id');
     }
 
-    public function seriesStories()
+    public function ratingTags()
     {
-        return $this->through('series')->has('stories');
+        return $this->belongsToMany(RatingTag::class)
+            ->using(RatingTagStory::class)
+            ->withTrashed()
+            ->withPivot('rating');
     }
 }
