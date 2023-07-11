@@ -13,7 +13,9 @@ class ListStorySeries extends ListRecords
     protected function getActions(): array
     {
         return [
-            Actions\CreateAction::make()->color('success'),
+            Actions\CreateAction::make()
+                ->label('New Story Series')
+                ->color('success'),
         ];
     }
 }

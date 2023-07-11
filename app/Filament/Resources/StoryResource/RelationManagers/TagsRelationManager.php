@@ -2,21 +2,20 @@
 
 namespace App\Filament\Resources\StoryResource\RelationManagers;
 
-use App\Filament\Resources\RatingTagResource;
-use App\Models\RatingTag;
+use App\Filament\Resources\TagResource;
+use App\Models\Tag;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class RatingTagsRelationManager extends RelationManager
+class TagsRelationManager extends RelationManager
 {
-    protected static string $relationship = 'ratingTags';
+    protected static string $relationship = 'tags';
     protected static ?string $inverseRelationship = 'stories';
 
     protected static ?string $recordTitleAttribute = 'name';
@@ -25,8 +24,8 @@ class RatingTagsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                RatingTagResource::getNameFormField(),
-                RatingTagResource::getRatingPivotFormField(),
+                TagResource::getPrimaryNameField(),
+                TagResource::getSecondaryNameField(),
             ]);
     }
 
@@ -35,10 +34,7 @@ class RatingTagsRelationManager extends RelationManager
      */
     protected function getTableQuery(): Builder|Relation
     {
-        /** @var Builder $parentRelation */
-        $parentRelation = parent::getTableQuery();
-
-        return $parentRelation
+        return parent::getTableQuery()
             ->withCount('stories');
     }
 
@@ -46,10 +42,9 @@ class RatingTagsRelationManager extends RelationManager
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('rating', 'desc')
             ->columns([
-                RatingTagResource::getNameTableColumn(),
-                RatingTagResource::getRatingPivotTableColumn()
+                TagResource::getPrimaryTableColumn(),
+                TagResource::getSecondaryTableColumn(),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
@@ -58,19 +53,15 @@ class RatingTagsRelationManager extends RelationManager
                     ->color('success')
                     ->label("Attach to existing Tag")
                     ->preloadRecordSelect()
-                    ->form(fn (Tables\Actions\AttachAction $action) => [
-                        $action->getRecordSelect(),
-                        RatingTagResource::getRatingPivotFormField()
-                    ]),
             ])
             ->actions([
                 Tables\Actions\Action::make('open')
-                    ->icon('heroicon-o-book-open')
                     ->label('Open')
-                    ->tooltip('Open in New Tab')
+                    ->icon('heroicon-o-book-open')
                     ->color('primary')
-                    ->url(fn (RatingTag $record) => RatingTagResource::getUrl('view', $record))
-                    ->openUrlInNewTab(true),
+                    ->tooltip('Open in a New Tab')
+                    ->url(fn (Tag $record) => TagResource::getUrl('view', $record))
+                    ->openUrlInNewTab(),
                 Tables\Actions\DetachAction::make()
                     ->requiresConfirmation(),
             ])
@@ -79,5 +70,4 @@ class RatingTagsRelationManager extends RelationManager
                     ->requiresConfirmation(),
             ]);
     }
-
 }

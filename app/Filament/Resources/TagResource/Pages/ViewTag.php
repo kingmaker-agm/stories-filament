@@ -1,20 +1,25 @@
 <?php
 
-namespace App\Filament\Resources\StorySeriesResource\Pages;
+namespace App\Filament\Resources\TagResource\Pages;
 
-use App\Filament\Resources\StorySeriesResource;
+use App\Filament\Resources\TagResource;
+use App\Models\Tag;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Contracts\Support\Htmlable;
 
-class ViewStorySeries extends ViewRecord
+class ViewTag extends ViewRecord
 {
-    protected static string $resource = StorySeriesResource::class;
+    protected static string $resource = TagResource::class;
 
     protected function getHeading(): string|Htmlable
     {
-        return $this->getRecord()->title;
+        /** @var Tag $record */
+        $record = $this->getRecord();
+
+        return $record->name;
     }
+
 
     protected function getActions(): array
     {

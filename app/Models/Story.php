@@ -22,6 +22,13 @@ class Story extends Model
         return $this->belongsTo(StorySeries::class, 'story_series_id');
     }
 
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class)
+            ->using(StoryTag::class)
+            ->withTimestamps();
+    }
+
     public function ratingTags()
     {
         return $this->belongsToMany(RatingTag::class)

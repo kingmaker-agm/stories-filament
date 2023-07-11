@@ -21,6 +21,7 @@ class RatingTagResource extends Resource
 
     protected static ?string $navigationGroup = "Taxonomy";
     protected static ?string $navigationIcon = 'heroicon-o-tag';
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {

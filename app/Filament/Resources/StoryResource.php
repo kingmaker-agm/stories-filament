@@ -24,6 +24,7 @@ class StoryResource extends Resource
     const FORM_COLUMN_COUNT = 1;
 
     protected static ?string $model = Story::class;
+    protected static ?string $recordTitleAttribute = 'title';
 
     protected static ?string $navigationGroup = "Stories";
     protected static ?string $navigationIcon = 'heroicon-o-book-open';
@@ -64,6 +65,7 @@ class StoryResource extends Resource
         return [
             RelationManagers\SeriesRelationManager::class,
             RelationManagers\RatingTagsRelationManager::class,
+            RelationManagers\TagsRelationManager::class,
         ];
     }
 

@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Filament\Resources\RatingTagResource\RelationManagers;
+namespace App\Filament\Resources\TagResource\RelationManagers;
 
-use App\Filament\Resources\RatingTagResource;
 use App\Filament\Resources\StoryResource;
 use Filament\Forms;
 use Filament\Resources\Form;
@@ -15,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class StoriesRelationManager extends RelationManager
 {
     protected static string $relationship = 'stories';
-    protected static ?string $inverseRelationship = 'ratingTags';
+    protected static ?string $inverseRelationship = 'tags';
 
     protected static ?string $recordTitleAttribute = 'title';
 
@@ -25,7 +24,6 @@ class StoriesRelationManager extends RelationManager
             ->columns(1)
             ->schema([
                 StoryResource::getTitleFormField(),
-                RatingTagResource::getRatingPivotFormField(),
                 StoryResource::getOriginalUrlFormField(),
                 StoryResource::getBodyFormField(),
             ]);
@@ -36,7 +34,7 @@ class StoriesRelationManager extends RelationManager
         return $table
             ->columns([
                 StoryResource::getTitleTableColumn(),
-                RatingTagResource::getRatingPivotTableColumn()
+                StoryResource::getBodyTableColumn(),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
@@ -44,11 +42,7 @@ class StoriesRelationManager extends RelationManager
                 Tables\Actions\AttachAction::make()
                     ->color('success')
                     ->label('Attach Story')
-                    ->preloadRecordSelect()
-                    ->form(fn (Tables\Actions\AttachAction $action) => [
-                        $action->getRecordSelect(),
-                        RatingTagResource::getRatingPivotFormField()
-                    ]),
+                    ->preloadRecordSelect(),
             ])
             ->actions([
                 Tables\Actions\Action::make('view')
@@ -56,7 +50,7 @@ class StoriesRelationManager extends RelationManager
                     ->icon('heroicon-o-book-open')
                     ->url(fn ($record) => StoryResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab(),
-               Tables\Actions\DetachAction::make()
+                Tables\Actions\DetachAction::make()
                     ->requiresConfirmation(),
             ])
             ->bulkActions([

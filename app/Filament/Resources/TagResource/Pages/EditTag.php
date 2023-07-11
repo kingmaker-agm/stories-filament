@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Filament\Resources\RatingTagResource\Pages;
+namespace App\Filament\Resources\TagResource\Pages;
 
-use App\Filament\Resources\RatingTagResource;
-use App\Models\RatingTag;
+use App\Filament\Resources\TagResource;
+use App\Models\Tag;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Contracts\Support\Htmlable;
 
-class EditRatingTag extends EditRecord
+class EditTag extends EditRecord
 {
-    protected static string $resource = RatingTagResource::class;
+    protected static string $resource = TagResource::class;
 
     protected function getHeading(): string|Htmlable
     {
-        /** @var RatingTag $record */
+        /** @var Tag $record */
         $record = $this->getRecord();
 
         return $record->name;
