@@ -2,6 +2,10 @@
 
 namespace App\Filament\Resources\TagResource\RelationManagers;
 
+use App\Filament\Actions\Story\AttachToRatingTagsBulkAction;
+use App\Filament\Actions\Story\AttachToTagsBulkAction;
+use App\Filament\Actions\Story\DetachFromRatingTagsBulkAction;
+use App\Filament\Actions\Story\DetachFromTagsBulkAction;
 use App\Filament\Resources\StoryResource;
 use Filament\Forms;
 use Filament\Resources\Form;
@@ -56,6 +60,10 @@ class StoriesRelationManager extends RelationManager
             ->bulkActions([
                 Tables\Actions\DetachBulkAction::make()
                     ->requiresConfirmation(),
+                AttachToTagsBulkAction::make(),
+                DetachFromTagsBulkAction::make(),
+                AttachToRatingTagsBulkAction::make(),
+                DetachFromRatingTagsBulkAction::make(),
             ]);
     }
 }

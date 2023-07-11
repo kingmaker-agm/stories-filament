@@ -2,6 +2,10 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Actions\Story\AttachToRatingTagsBulkAction;
+use App\Filament\Actions\Story\AttachToTagsBulkAction;
+use App\Filament\Actions\Story\DetachFromRatingTagsBulkAction;
+use App\Filament\Actions\Story\DetachFromTagsBulkAction;
 use App\Filament\Forms\Components\Actions\OpenUrlAction;
 use App\Filament\Resources\StoryResource\Pages;
 use App\Filament\Resources\StoryResource\RelationManagers;
@@ -57,6 +61,10 @@ class StoryResource extends Resource
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make()
                     ->requiresConfirmation(),
+                AttachToTagsBulkAction::make(),
+                DetachFromTagsBulkAction::make(),
+                AttachToRatingTagsBulkAction::make(),
+                DetachFromRatingTagsBulkAction::make(),
             ]);
     }
 
