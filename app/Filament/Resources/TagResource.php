@@ -46,6 +46,7 @@ class TagResource extends Resource
             ->columns([
                 self::getPrimaryTableColumn(),
                 self::getSecondaryTableColumn(),
+                self::getNameTableColumn(),
                 self::getStoriesCountTableColumn(),
             ])
             ->filters([
@@ -119,6 +120,7 @@ class TagResource extends Resource
     public static function getPrimaryTableColumn(): Tables\Columns\TextColumn
     {
         return Tables\Columns\TextColumn::make('primary')
+            ->visibleFrom('md')
             ->sortable()
             ->searchable();
     }
@@ -126,6 +128,15 @@ class TagResource extends Resource
     public static function getSecondaryTableColumn(): Tables\Columns\TextColumn
     {
         return Tables\Columns\TextColumn::make('secondary')
+            ->visibleFrom('md')
+            ->sortable()
+            ->searchable();
+    }
+
+    public static function getNameTableColumn(): Tables\Columns\TextColumn
+    {
+        return Tables\Columns\TextColumn::make('name')
+            ->hiddenFrom('md')
             ->sortable()
             ->searchable();
     }

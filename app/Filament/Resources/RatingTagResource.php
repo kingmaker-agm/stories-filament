@@ -103,6 +103,7 @@ class RatingTagResource extends Resource
     public static function getRatingPivotTableColumn()
     {
         return Tables\Columns\TextInputColumn::make('rating')
+            ->grow(false)
             ->sortable();
     }
 }

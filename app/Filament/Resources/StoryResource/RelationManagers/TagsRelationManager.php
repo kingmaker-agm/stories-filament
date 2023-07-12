@@ -45,6 +45,7 @@ class TagsRelationManager extends RelationManager
             ->columns([
                 TagResource::getPrimaryTableColumn(),
                 TagResource::getSecondaryTableColumn(),
+                TagResource::getNameTableColumn(),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()

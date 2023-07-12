@@ -112,6 +112,7 @@ class StorySeriesResource extends Resource
     {
         return Tables\Columns\TextColumn::make('number_of_stories')
             ->wrap()
+            ->visibleFrom('md')
             ->label('Number of Stories')
             ->formatStateUsing(fn(StorySeries $record) => (string) $record->stories()->count());
     }
