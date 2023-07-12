@@ -37,22 +37,23 @@ class StoriesRelationManager extends RelationManager
             ]);
     }
 
-    protected function getTableQuery(): Builder|Relation
-    {
-        return Story::query()
-            ->whereBelongsTo($this->getOwnerRecord(), 'series')
-            ->orderBy('story_series_order');
-    }
-
-
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('story_series_order', 'asc')
             ->columns([
                 StoryResource::getTitleTableColumn(),
+                Tables\Columns\TextColumn::make('story_series_order')
+                    ->label('Order')
+                    ->toggleable()
+                    ->sortable(),
                 StoryResource::getBodyTableColumn(),
             ])
             ->reorderable('story_series_order')
+            ->filters([
+                StoryResource::getTagsFilter(),
+                StoryResource::getRatingTagsFilter(),
+            ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
                     ->color('success'),

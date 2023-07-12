@@ -110,7 +110,9 @@ class StorySeriesResource extends Resource
 
     public static function getNumberOfStoriesTableColumn(): Tables\Columns\TextColumn
     {
-        return Tables\Columns\TextColumn::make('number_of_stories')
+        return Tables\Columns\TextColumn::make('stories_count')
+            ->counts('stories')
+            ->toggleable()
             ->wrap()
             ->visibleFrom('md')
             ->label('Number of Stories')

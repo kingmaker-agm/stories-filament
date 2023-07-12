@@ -10,8 +10,6 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class RatingTagResource extends Resource
 {
@@ -32,19 +30,12 @@ class RatingTagResource extends Resource
             ]);
     }
 
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->withCount('stories');
-    }
-
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
                 self::getNameTableColumn(),
-                Tables\Columns\TextColumn::make('stories_count')
-                    ->sortable(),
+                self::getStoriesCountTableColumn(),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -104,6 +95,13 @@ class RatingTagResource extends Resource
     {
         return Tables\Columns\TextInputColumn::make('rating')
             ->grow(false)
+            ->sortable();
+    }
+
+    public static function getStoriesCountTableColumn(): Tables\Columns\TextColumn
+    {
+        return Tables\Columns\TextColumn::make('stories_count')
+            ->counts('stories')
             ->sortable();
     }
 }

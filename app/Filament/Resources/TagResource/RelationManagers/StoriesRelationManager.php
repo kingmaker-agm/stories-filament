@@ -38,7 +38,12 @@ class StoriesRelationManager extends RelationManager
         return $table
             ->columns([
                 StoryResource::getTitleTableColumn(),
-                StoryResource::getBodyTableColumn(),
+                StoryResource::getBodyTableColumn()
+                    ->toggleable(),
+            ])
+            ->filters([
+                StoryResource::getTagsFilter(),
+                StoryResource::getRatingTagsFilter(),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()

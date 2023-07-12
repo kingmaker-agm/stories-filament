@@ -40,9 +40,15 @@ class StoriesRelationManager extends RelationManager
         return $table
             ->columns([
                 StoryResource::getTitleTableColumn(),
-                RatingTagResource::getRatingPivotTableColumn()
+                RatingTagResource::getRatingPivotTableColumn(),
+                StoryResource::getBodyTableColumn()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('rating')
+            ->filters([
+                StoryResource::getTagsFilter(),
+                StoryResource::getRatingTagsFilter(),
+            ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
                     ->label("Create Story"),

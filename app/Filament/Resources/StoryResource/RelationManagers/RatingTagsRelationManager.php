@@ -9,10 +9,6 @@ use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
 use Filament\Tables;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class RatingTagsRelationManager extends RelationManager
 {
@@ -29,19 +25,6 @@ class RatingTagsRelationManager extends RelationManager
                 RatingTagResource::getRatingPivotFormField(),
             ]);
     }
-
-    /**
-     * @throws \Exception
-     */
-    protected function getTableQuery(): Builder|Relation
-    {
-        /** @var Builder $parentRelation */
-        $parentRelation = parent::getTableQuery();
-
-        return $parentRelation
-            ->withCount('stories');
-    }
-
 
     public static function table(Table $table): Table
     {

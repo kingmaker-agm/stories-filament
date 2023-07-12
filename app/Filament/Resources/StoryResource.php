@@ -9,19 +9,16 @@ use App\Filament\Actions\Story\DetachFromTagsBulkAction;
 use App\Filament\Forms\Components\Actions\OpenUrlAction;
 use App\Filament\Resources\StoryResource\Pages;
 use App\Filament\Resources\StoryResource\RelationManagers;
+use App\Models\RatingTag;
 use App\Models\Story;
-use Closure;
+use App\Models\Tag;
 use Filament\Forms;
-use Filament\Forms\Components\Actions\Action;
 use Filament\Resources\Form;
-use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
-use Webbingbrasil\FilamentCopyActions\Forms\Actions\CopyAction;
 
 class StoryResource extends Resource
 {
@@ -51,6 +48,8 @@ class StoryResource extends Resource
             ->columns([
                 self::getTitleTableColumn(),
                 self::getSeriesTableColumn(),
+                self::getTagsTableColumn(),
+                self::getRatingTagsTableColumn(),
                 self::getBodyTableColumn(),
             ])
             ->actions([
@@ -65,6 +64,11 @@ class StoryResource extends Resource
                 DetachFromTagsBulkAction::make(),
                 AttachToRatingTagsBulkAction::make(),
                 DetachFromRatingTagsBulkAction::make(),
+            ])
+            ->filters([
+                self::getSeriesFilter(),
+                self::getTagsFilter(),
+                self::getRatingTagsFilter(),
             ]);
     }
 
@@ -135,20 +139,81 @@ class StoryResource extends Resource
             ->required();
     }
 
+    public static function getTagsTableColumn(): Tables\Columns\TextColumn
+    {
+        return Tables\Columns\TextColumn::make('tags_count')
+            ->counts('tags')
+            ->label('Tags')
+            ->toggleable(isToggledHiddenByDefault: true)
+            ->sortable();
+    }
+
+    public static function getRatingTagsTableColumn(): Tables\Columns\TextColumn
+    {
+        return Tables\Columns\TextColumn::make('rating_tags_count')
+            ->counts('ratingTags')
+            ->label('Rating Tags')
+            ->toggleable(isToggledHiddenByDefault: true)
+            ->sortable();
+    }
+
     public static function getSeriesTableColumn(): Tables\Columns\IconColumn
     {
-        return Tables\Columns\IconColumn::make('story_series_id')
+        return Tables\Columns\IconColumn::make('series_exists')
             ->label('Series')
             ->visibleFrom('md')
             ->grow(false)
-            ->url(fn ($record) => $record->story_series_id ? StorySeriesResource::getUrl('view', ['record' => $record->story_series_id]) : null)
+            ->toggleable()
+            ->exists('series')
+            ->url(fn (Story $record) => $record->story_series_id ? StorySeriesResource::getUrl('view', $record->story_series_id) : null)
             ->options([
-                'heroicon-o-check' => fn($state) => !!$state,
-                'heroicon-o-minus' => fn($state) => $state === null
+                'heroicon-o-check' => true,
+                'heroicon-o-minus' => false,
             ])
             ->colors([
-                'success' => fn($state) => !!$state,
-                'danger' => fn($state) => $state === null
+                'success' => true,
+                'danger' => false,
             ]);
+    }
+
+    public static function getSeriesFilter(): string|Tables\Filters\TernaryFilter|null
+    {
+        return Tables\Filters\TernaryFilter::make('story_series_id')
+            ->nullable()
+            ->label('Part of Series');
+    }
+
+    public static function getTagsFilter(): string|null|Tables\Filters\SelectFilter
+    {
+        return Tables\Filters\SelectFilter::make('tags')
+            ->relationship('tags', 'name')
+            ->multiple()
+            ->query(function (Builder $query, array $data) {
+                $ids = $data['values'];
+
+                return $query->where(function (Builder $query) use ($ids) {
+                    foreach ($ids as $id) {
+                        $query->whereHas('tags', fn(Builder $query) => $query->where((new Tag)->qualifyColumn('id'), $id));
+                    }
+                });
+            })
+            ->label('Tags');
+    }
+
+    public static function getRatingTagsFilter(): string|null|Tables\Filters\SelectFilter
+    {
+        return Tables\Filters\SelectFilter::make('rating_tags')
+            ->relationship('ratingTags', 'name')
+            ->multiple()
+            ->query(function (Builder $query, array $data) {
+                $ids = $data['values'];
+
+                return $query->where(function (Builder $query) use ($ids) {
+                    foreach ($ids as $id) {
+                        $query->whereHas('ratingTags', fn(Builder $query) => $query->where((new RatingTag)->qualifyColumn('id'), $id));
+                    }
+                });
+            })
+            ->label('Rating Tags');
     }
 }

@@ -10,8 +10,6 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Validation\Rules\Unique;
 
 class TagResource extends Resource
@@ -31,12 +29,6 @@ class TagResource extends Resource
                 self::getPrimaryNameField(),
                 self::getSecondaryNameField(),
             ]);
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->withCount('stories');
     }
 
 
@@ -144,6 +136,7 @@ class TagResource extends Resource
     public static function getStoriesCountTableColumn(): Tables\Columns\TextColumn
     {
         return Tables\Columns\TextColumn::make('stories_count')
+            ->counts('stories')
             ->sortable();
     }
 }

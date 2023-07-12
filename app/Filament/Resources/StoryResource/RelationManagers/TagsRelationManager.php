@@ -9,9 +9,6 @@ use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
 use Filament\Tables;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class TagsRelationManager extends RelationManager
 {
@@ -28,16 +25,6 @@ class TagsRelationManager extends RelationManager
                 TagResource::getSecondaryNameField(),
             ]);
     }
-
-    /**
-     * @throws \Exception
-     */
-    protected function getTableQuery(): Builder|Relation
-    {
-        return parent::getTableQuery()
-            ->withCount('stories');
-    }
-
 
     public static function table(Table $table): Table
     {
