@@ -56,6 +56,18 @@ return [
             'throw' => false,
         ],
 
+        'backup' => [
+            'driver' => 's3',
+            'key' => env('CLOUDFLARE_R2_BACKUP_ACCESS_KEY_ID'),
+            'secret' => env('CLOUDFLARE_R2_BACKUP_SECRET_ACCESS_KEY'),
+            'region' => 'us-east-1',
+            'bucket' => env('CLOUDFLARE_R2_BACKUP_BUCKET'),
+            'url' => env('CLOUDFLARE_R2_BACKUP_URL'),
+            'visibility' => 'private',
+            'endpoint' => env('CLOUDFLARE_R2_BACKUP_ENDPOINT'),
+            'use_path_style_endpoint' => env('CLOUDFLARE_R2_BACKUP_USE_PATH_STYLE_ENDPOINT', false),
+            'throw' => false,
+        ],
     ],
 
     /*

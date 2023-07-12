@@ -42,6 +42,7 @@ class StoriesRelationManager extends RelationManager
                 StoryResource::getTitleTableColumn(),
                 RatingTagResource::getRatingPivotTableColumn()
             ])
+            ->defaultSort('rating')
             ->headerActions([
                 Tables\Actions\CreateAction::make()
                     ->label("Create Story"),
