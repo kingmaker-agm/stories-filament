@@ -4,8 +4,10 @@ namespace App\Filament\Resources;
 
 use App\Actions\Story\LikeStoryAction;
 use App\Actions\Story\RateStoryAction;
+use App\Actions\Story\ReadStoryAction;
 use App\Actions\Story\RemoveStoryRatingAction;
 use App\Actions\Story\UnlikeStoryAction;
+use App\Actions\Story\UnreadStoryAction;
 use App\Filament\Actions\Story\AttachToRatingTagsBulkAction;
 use App\Filament\Actions\Story\AttachToTagsBulkAction;
 use App\Filament\Actions\Story\DetachFromRatingTagsBulkAction;
@@ -48,12 +50,16 @@ class StoryResource extends Resource
                 self::getTitleFormField(),
                 self::getOriginalUrlFormField(),
                 self::getUserNameFormField(),
-                Forms\Components\Grid::make(['md' => 2])
+                Forms\Components\Grid::make(['sm' => 2, 'md' => 3])
                     ->schema([
                         Forms\Components\Toggle::make('user_like_exists')
                             ->onColor('success')
                             ->offColor('danger')
                             ->label('Liked'),
+                        Forms\Components\Toggle::make('user_read_exists')
+                            ->onColor('success')
+                            ->offColor('danger')
+                            ->label('Read'),
                         Rating::make('user_rating_min_rating')
                             ->label('User Rating')
                             ->min(1)
@@ -69,6 +75,7 @@ class StoryResource extends Resource
             ->columns([
                 self::getTitleTableColumn(),
                 self::getLikedTableColumn(),
+                self::getReadTableColumn(),
                 self::getUserRatingTableColumn(),
                 self::getSeriesTableColumn(),
                 self::getTagsTableColumn(),
@@ -91,6 +98,7 @@ class StoryResource extends Resource
             ->filters([
                 self::getSeriesFilter(),
                 self::getUserLikedFilter(),
+                self::getUserReadFilter(),
                 self::getUserRatingFilter(),
                 self::getTagsFilter(),
                 self::getRatingTagsFilter(),
@@ -120,6 +128,7 @@ class StoryResource extends Resource
     {
         return Story::query()
             ->withExists('userLike')
+            ->withExists('userRead')
             ->withMin('userRating', 'rating')
             ->with([
                 'series',
@@ -399,5 +408,41 @@ class StoryResource extends Resource
 
                 return [];
             });
+    }
+
+    public static function getReadTableColumn(): ToggleIconColumn
+    {
+        return ToggleIconColumn::make('user_read_exists')
+            ->exists('userRead')
+            ->label('Read')
+            ->sortable()
+            ->toggleable()
+            ->alignCenter()
+            ->getStateUsing(fn(Story $record) => $record->user_read_exists)
+            ->updateStateUsing(function (Story $record, $state) {
+                if ($state) {
+                    $readStoryAction = new ReadStoryAction();
+                    $readStoryAction->execute($record, auth()->user());
+                } else {
+                    $unreadStoryAction = new UnreadStoryAction();
+                    $unreadStoryAction->execute($record, auth()->user());
+                }
+
+                return $state;
+            })
+            ->onIcon('heroicon-s-book-open')
+            ->offIcon('heroicon-s-lock-closed')
+            ->onColor('success')
+            ->offColor('secondary');
+    }
+
+    public static function getUserReadFilter(): Tables\Filters\TernaryFilter
+    {
+        return Tables\Filters\TernaryFilter::make('user_read_exists')
+            ->label('Read')
+            ->queries(
+                true: fn(Builder $query) => $query->whereHas('userRead'),
+                false: fn(Builder $query) => $query->whereDoesntHave('userRead'),
+            );
     }
 }

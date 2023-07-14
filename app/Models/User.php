@@ -64,6 +64,13 @@ class User extends Authenticatable implements FilamentUser
             ->withTimestamps();
     }
 
+    public function readStories()
+    {
+        return $this->belongsToMany(Story::class, 'story_read')
+            ->using(StoryRead::class)
+            ->withTimestamps();
+    }
+
     public function canAccessFilament(): bool
     {
         return Str::endsWith($this->email, '@kingmaker.co.in');

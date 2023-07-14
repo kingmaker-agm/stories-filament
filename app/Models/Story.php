@@ -63,4 +63,17 @@ class Story extends Model
         return $this->hasOne(StoryRating::class)
             ->where('user_id', auth()->id());
     }
+
+    public function readUsers()
+    {
+        return $this->belongsToMany(User::class, 'story_read')
+            ->using(StoryRead::class)
+            ->withTimestamps();
+    }
+
+    public function userRead()
+    {
+        return $this->hasOne(StoryRead::class)
+            ->where('user_id', auth()->id());
+    }
 }

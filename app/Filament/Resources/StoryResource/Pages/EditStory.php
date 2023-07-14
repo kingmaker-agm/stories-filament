@@ -4,8 +4,10 @@ namespace App\Filament\Resources\StoryResource\Pages;
 
 use App\Actions\Story\LikeStoryAction;
 use App\Actions\Story\RateStoryAction;
+use App\Actions\Story\ReadStoryAction;
 use App\Actions\Story\RemoveStoryRatingAction;
 use App\Actions\Story\UnlikeStoryAction;
+use App\Actions\Story\UnreadStoryAction;
 use App\Filament\Resources\StoryResource;
 use App\Models\Story;
 use Filament\Pages\Actions;
@@ -36,6 +38,8 @@ class EditStory extends EditRecord
             unset($data['user_like_exists']);
             $user_rating = $data['user_rating_min_rating'];
             unset($data['user_rating_min_rating']);
+            $user_read = $data['user_read_exists'];
+            unset($data['user_read_exists']);
 
             $record->update($data);
 
@@ -45,6 +49,15 @@ class EditStory extends EditRecord
             } else {
                 $unlikeStoryAction = new UnlikeStoryAction;
                 $unlikeStoryAction->execute($record, auth()->user());
+            }
+
+            if ($user_read) {
+                $readStoryAction = new ReadStoryAction;
+                $readStoryAction->execute($record, auth()->user());
+            }
+            else {
+                $unreadStoryAction = new UnreadStoryAction();
+                $unreadStoryAction->execute($record, auth()->user());
             }
 
             if (empty($user_rating)) {

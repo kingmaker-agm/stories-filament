@@ -42,6 +42,7 @@ class StoriesRelationManager extends RelationManager
                 RatingTagResource::getRatingPivotTableColumn(),
                 StoryResource::getTitleTableColumn(),
                 StoryResource::getLikedTableColumn(),
+                StoryResource::getReadTableColumn(),
                 StoryResource::getUserRatingTableColumn(),
                 StoryResource::getBodyTableColumn()
                     ->toggleable(isToggledHiddenByDefault: true),

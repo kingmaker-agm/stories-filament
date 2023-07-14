@@ -39,6 +39,7 @@ class StoriesRelationManager extends RelationManager
             ->columns([
                 StoryResource::getTitleTableColumn(),
                 StoryResource::getLikedTableColumn(),
+                StoryResource::getReadTableColumn(),
                 StoryResource::getUserRatingTableColumn(),
                 StoryResource::getBodyTableColumn()
                     ->toggleable(),
