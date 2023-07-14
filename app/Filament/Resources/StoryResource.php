@@ -2,6 +2,10 @@
 
 namespace App\Filament\Resources;
 
+use App\Actions\Story\LikeStoryAction;
+use App\Actions\Story\RateStoryAction;
+use App\Actions\Story\RemoveStoryRatingAction;
+use App\Actions\Story\UnlikeStoryAction;
 use App\Filament\Actions\Story\AttachToRatingTagsBulkAction;
 use App\Filament\Actions\Story\AttachToTagsBulkAction;
 use App\Filament\Actions\Story\DetachFromRatingTagsBulkAction;
@@ -47,6 +51,8 @@ class StoryResource extends Resource
                 Forms\Components\Grid::make(['md' => 2])
                     ->schema([
                         Forms\Components\Toggle::make('user_like_exists')
+                            ->onColor('success')
+                            ->offColor('danger')
                             ->label('Liked'),
                         Rating::make('user_rating_min_rating')
                             ->label('User Rating')
@@ -260,9 +266,11 @@ class StoryResource extends Resource
             ->getStateUsing(fn(Story $record) => $record->user_like_exists)
             ->updateStateUsing(function (Story $record, $state) {
                 if ($state) {
-                    $record->likedUsers()->syncWithoutDetaching(auth()->user()->id);
+                    $likeStoryAction = new LikeStoryAction;
+                    $likeStoryAction->execute($record, auth()->user());
                 } else {
-                    $record->likedUsers()->detach(auth()->user()->id);
+                    $unlikeStoryAction = new UnlikeStoryAction;
+                    $unlikeStoryAction->execute($record, auth()->user());
                 }
 
                 return $state;
@@ -288,11 +296,11 @@ class StoryResource extends Resource
             ->placeholder('No Rating')
             ->updateStateUsing(function (Story $record, $state) {
                 if (empty($state)) {
-                    $record->ratedUsers()->detach(auth()->id());
+                    $removeStoryRatingAction = new RemoveStoryRatingAction;
+                    $removeStoryRatingAction->execute($record, auth()->user());
                 } else {
-                    $record->ratedUsers()->syncWithoutDetaching([
-                        auth()->id() => ['rating' => $state],
-                    ]);
+                    $rateStoryAction = new RateStoryAction;
+                    $rateStoryAction->execute($record, auth()->user(), $state);
                 }
 
                 return $state;

@@ -2,6 +2,10 @@
 
 namespace App\Filament\Resources\StoryResource\Pages;
 
+use App\Actions\Story\LikeStoryAction;
+use App\Actions\Story\RateStoryAction;
+use App\Actions\Story\RemoveStoryRatingAction;
+use App\Actions\Story\UnlikeStoryAction;
 use App\Filament\Resources\StoryResource;
 use App\Models\Story;
 use Filament\Pages\Actions;
@@ -36,15 +40,19 @@ class EditStory extends EditRecord
             $record->update($data);
 
             if ($user_like) {
-                $record->likedUsers()->syncWithoutDetaching([auth()->id()]);
+                $likeStoryAction = new LikeStoryAction;
+                $likeStoryAction->execute($record, auth()->user());
             } else {
-                $record->likedUsers()->detach([auth()->id()]);
+                $unlikeStoryAction = new UnlikeStoryAction;
+                $unlikeStoryAction->execute($record, auth()->user());
             }
 
             if (empty($user_rating)) {
-                $record->ratedUsers()->detach([auth()->id()]);
+                $removeStoryRatingAction = new RemoveStoryRatingAction;
+                $removeStoryRatingAction->execute($record, auth()->user());
             } else {
-                $record->ratedUsers()->syncWithoutDetaching([auth()->id() => ['rating' => $user_rating]]);
+                $rateStoryAction = new RateStoryAction;
+                $rateStoryAction->execute($record, auth()->user(), $user_rating);
             }
 
             return StoryResource::resolveSingleRecord($record->getKey());

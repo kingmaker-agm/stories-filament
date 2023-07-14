@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\StoryResource\Pages;
 
+use App\Actions\Story\LikeStoryAction;
+use App\Actions\Story\RateStoryAction;
 use App\Filament\Resources\StoryResource;
 use App\Models\Story;
 use Filament\Pages\Actions;
@@ -34,11 +36,11 @@ class CreateStory extends CreateRecord
             $record = Story::create($data);
 
             if ($user_like) {
-                $record->likedUsers()->syncWithoutDetaching([auth()->id()]);
+                (new LikeStoryAction)->execute($record, auth()->user());
             }
 
             if (!empty($user_rating)) {
-                $record->ratedUsers()->syncWithoutDetaching([auth()->id() => ['rating' => $user_rating]]);
+                (new RateStoryAction)->execute($record, auth()->user(), $user_rating);
             }
 
             return $record;
