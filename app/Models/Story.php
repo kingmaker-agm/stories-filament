@@ -36,4 +36,31 @@ class Story extends Model
             ->withTrashed()
             ->withPivot('rating');
     }
+
+    public function likedUsers()
+    {
+        return $this->belongsToMany(User::class, 'story_like')
+            ->using(StoryLikes::class)
+            ->withTimestamps();
+    }
+
+    public function userLike()
+    {
+        return $this->hasOne(StoryLikes::class)
+            ->where('user_id', auth()->id());
+    }
+
+    public function ratedUsers()
+    {
+        return $this->belongsToMany(User::class, 'story_rating')
+            ->withPivot('rating')
+            ->using(StoryRating::class)
+            ->withTimestamps();
+    }
+
+    public function userRating()
+    {
+        return $this->hasOne(StoryRating::class)
+            ->where('user_id', auth()->id());
+    }
 }

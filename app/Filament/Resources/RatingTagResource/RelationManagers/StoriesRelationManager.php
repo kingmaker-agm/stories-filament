@@ -39,8 +39,10 @@ class StoriesRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                StoryResource::getTitleTableColumn(),
                 RatingTagResource::getRatingPivotTableColumn(),
+                StoryResource::getTitleTableColumn(),
+                StoryResource::getLikedTableColumn(),
+                StoryResource::getUserRatingTableColumn(),
                 StoryResource::getBodyTableColumn()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

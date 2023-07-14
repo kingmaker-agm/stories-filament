@@ -12,13 +12,19 @@ use App\Filament\Resources\StoryResource\RelationManagers;
 use App\Models\RatingTag;
 use App\Models\Story;
 use App\Models\Tag;
+use Archilex\ToggleIconColumn\Columns\ToggleIconColumn;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Livewire\Component;
+use Webbingbrasil\FilamentAdvancedFilter\Filters\NumberFilter;
+use Yepsua\Filament\Forms\Components\Rating;
 
 class StoryResource extends Resource
 {
@@ -38,6 +44,15 @@ class StoryResource extends Resource
                 self::getTitleFormField(),
                 self::getOriginalUrlFormField(),
                 self::getUserNameFormField(),
+                Forms\Components\Grid::make(['md' => 2])
+                    ->schema([
+                        Forms\Components\Toggle::make('user_like_exists')
+                            ->label('Liked'),
+                        Rating::make('user_rating_min_rating')
+                            ->label('User Rating')
+                            ->min(1)
+                            ->max(5),
+                    ]),
                 self::getBodyFormField(),
             ]);
     }
@@ -47,6 +62,8 @@ class StoryResource extends Resource
         return $table
             ->columns([
                 self::getTitleTableColumn(),
+                self::getLikedTableColumn(),
+                self::getUserRatingTableColumn(),
                 self::getSeriesTableColumn(),
                 self::getTagsTableColumn(),
                 self::getRatingTagsTableColumn(),
@@ -67,6 +84,8 @@ class StoryResource extends Resource
             ])
             ->filters([
                 self::getSeriesFilter(),
+                self::getUserLikedFilter(),
+                self::getUserRatingFilter(),
                 self::getTagsFilter(),
                 self::getRatingTagsFilter(),
             ]);
@@ -89,6 +108,19 @@ class StoryResource extends Resource
             'view' => Pages\ViewStory::route('/{record}'),
             'edit' => Pages\EditStory::route('/{record}/edit'),
         ];
+    }
+
+    public static function resolveSingleRecord($key): Model
+    {
+        return Story::query()
+            ->withExists('userLike')
+            ->withMin('userRating', 'rating')
+            ->with([
+                'series',
+                'tags',
+                'ratingTags',
+            ])
+            ->findOrFail($key);
     }
 
     public static function getTitleTableColumn(): Tables\Columns\TextColumn
@@ -215,5 +247,149 @@ class StoryResource extends Resource
                 });
             })
             ->label('Rating Tags');
+    }
+
+    public static function getLikedTableColumn(): ToggleIconColumn
+    {
+        return ToggleIconColumn::make('user_like_exists')
+            ->exists('userLike')
+            ->label('Liked')
+            ->sortable()
+            ->toggleable()
+            ->alignCenter()
+            ->getStateUsing(fn(Story $record) => $record->user_like_exists)
+            ->updateStateUsing(function (Story $record, $state) {
+                if ($state) {
+                    $record->likedUsers()->syncWithoutDetaching(auth()->user()->id);
+                } else {
+                    $record->likedUsers()->detach(auth()->user()->id);
+                }
+
+                return $state;
+            })
+            ->onIcon('heroicon-s-heart')
+            ->offIcon('heroicon-o-heart')
+            ->onColor('danger')
+            ->offColor('danger');
+    }
+
+    public static function getUserRatingTableColumn(): Tables\Columns\SelectColumn
+    {
+        return Tables\Columns\SelectColumn::make('user_rating_max_rating')
+            ->max('userRating', 'rating')
+            ->label('Rating')
+            ->options([
+                1 => '1 Star',
+                2 => '2 Stars',
+                3 => '3 Stars',
+                4 => '4 Stars',
+                5 => '5 Stars',
+            ])
+            ->placeholder('No Rating')
+            ->updateStateUsing(function (Story $record, $state) {
+                if (empty($state)) {
+                    $record->ratedUsers()->detach(auth()->id());
+                } else {
+                    $record->ratedUsers()->syncWithoutDetaching([
+                        auth()->id() => ['rating' => $state],
+                    ]);
+                }
+
+                return $state;
+            })
+            ->sortable()
+            ->toggleable();
+    }
+
+    public static function getUserLikedFilter(): Tables\Filters\TernaryFilter
+    {
+        return Tables\Filters\TernaryFilter::make('user_like_exists')
+            ->label('Liked')
+            ->queries(
+                true: fn(Builder $query) => $query->whereHas('userLike'),
+                false: fn(Builder $query) => $query->whereDoesntHave('userLike'),
+            );
+    }
+
+    public static function getUserRatingFilter(): NumberFilter
+    {
+        return NumberFilter::make('user_rating_min_rating')
+            ->label('User Rating')
+            ->query(function (Builder $query, array $data) {
+                $clause = $data['clause'];
+                $value = $data['value'];
+                $from = $data['from'];
+                $until = $data['until'];
+
+                switch ($clause) {
+                    case 'equal':
+                    case 'not_equal':
+                    case 'greater_equal':
+                    case 'less_equal':
+                    case 'greater_than':
+                    case 'less_than':
+                        !empty($value) && $query->whereHas(
+                            'userRating',
+                            fn(Builder $query) => $query->where(
+                                'rating',
+                                match ($clause) {
+                                    'equal' => '=',
+                                    'not_equal' => '!=',
+                                    'greater_equal' => '>=',
+                                    'less_equal' => '<=',
+                                    'greater_than' => '>',
+                                    'less_than' => '<',
+                                },
+                                $value)
+                        );
+                        break;
+                    case 'between':
+                        !empty($from) && !empty($until) && $query->whereHas(
+                            'userRating',
+                            fn(Builder $query) => $query
+                                ->where('rating', '>=', $from ?? 0)
+                                ->where('rating', '<=', $until ?? 100)
+                        );
+                        break;
+                    case 'set':
+                        $query->whereHas('userRating');
+                        break;
+                    case 'not_set':
+                        $query->whereDoesntHave('userRating');
+                        break;
+                }
+                return $query;
+            })
+            ->indicateUsing(function (array $state, NumberFilter $filter): string|array {
+                $clause = $state['clause'];
+                $value = $state['value'];
+                $from = $state['from'];
+                $until = $state['until'];
+
+                if (!empty($clause)) {
+                    return match ($clause) {
+                        NumberFilter::CLAUSE_SET, NumberFilter::CLAUSE_NOT_SET => collect([
+                            $filter->getLabel(),
+                            $filter->clauses()[$clause],
+                        ])->implode(' '),
+                        NumberFilter::CLAUSE_BETWEEN => (!empty($from) && !empty($until)) ? collect([
+                            $filter->getLabel(),
+                            $filter->clauses()[$clause],
+                            $from,
+                            'and',
+                            $until,
+                        ])->implode(' ') : [],
+                        default => !empty($value)
+                            ? collect([
+                                $filter->getLabel(),
+                                $filter->clauses()[$clause],
+                                $value,
+                            ])->implode(' ')
+                            : [],
+                    };
+                }
+
+                return [];
+            });
     }
 }

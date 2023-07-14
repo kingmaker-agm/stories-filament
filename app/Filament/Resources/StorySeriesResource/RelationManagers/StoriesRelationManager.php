@@ -47,6 +47,8 @@ class StoriesRelationManager extends RelationManager
                     ->label('Order')
                     ->toggleable()
                     ->sortable(),
+                StoryResource::getLikedTableColumn(),
+                StoryResource::getUserRatingTableColumn(),
                 StoryResource::getBodyTableColumn(),
             ])
             ->reorderable('story_series_order')

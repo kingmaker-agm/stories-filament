@@ -49,6 +49,21 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(Story::class);
     }
 
+    public function likedStories()
+    {
+        return $this->belongsToMany(Story::class, 'story_like')
+            ->using(StoryLikes::class)
+            ->withTimestamps();
+    }
+
+    public function ratedStories()
+    {
+        return $this->belongsToMany(Story::class, 'story_rating')
+            ->withPivot('rating')
+            ->using(StoryRating::class)
+            ->withTimestamps();
+    }
+
     public function canAccessFilament(): bool
     {
         return Str::endsWith($this->email, '@kingmaker.co.in');
