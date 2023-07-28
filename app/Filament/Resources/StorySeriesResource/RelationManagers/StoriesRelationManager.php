@@ -59,7 +59,10 @@ class StoriesRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
-                    ->color('success'),
+                    ->color('success')
+                    ->mutateFormDataUsing(fn (array $data) => array_merge($data, [
+                        'user_id' => auth()->id(),
+                    ])),
                 Tables\Actions\AssociateAction::make()
                     ->color('primary'),
             ])

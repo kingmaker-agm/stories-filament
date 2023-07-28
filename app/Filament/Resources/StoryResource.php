@@ -183,6 +183,22 @@ class StoryResource extends Resource
     public static function getBodyFormField(): Forms\Components\RichEditor
     {
         return Forms\Components\RichEditor::make('body')
+            ->toolbarButtons([
+                'bold',
+                'italic',
+                'underline',
+                'strike',
+                'link',
+                'h2',
+                'h3',
+                'h4',
+                'blockquote',
+                'codeBlock',
+                'bulletList',
+                'orderedList',
+                'redo',
+                'undo',
+            ])
             ->required();
     }
 
