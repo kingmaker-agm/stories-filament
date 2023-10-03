@@ -6,6 +6,7 @@ use App\Filament\Forms\Components\Actions\OpenUrlAction;
 use App\Filament\Resources\StoryResource\RelationManagers\RatingTagsRelationManager;
 use App\Filament\Resources\StorySeriesResource\Pages;
 use App\Filament\Resources\StorySeriesResource\RelationManagers;
+use App\Models\Story;
 use App\Models\StorySeries;
 use Filament\Forms;
 use Filament\Resources\Form;
@@ -37,12 +38,46 @@ class StorySeriesResource extends Resource
             ]);
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withCount('stories')
+            ->addSelect([
+                'user_not_read_story_under_series' => Story::query()
+                    ->selectRaw('COUNT(*)')
+                    ->whereColumn((new Story)->qualifyColumn('story_series_id'), (new StorySeries)->qualifyColumn('id'))
+                    ->whereRaw("NOT EXISTS (SELECT * FROM story_read WHERE story_read.story_id = stories.id AND story_read.user_id = " . auth()->id() . ")"),
+                'user_not_like_story_under_series' => Story::query()
+                    ->selectRaw('COUNT(*)')
+                    ->whereColumn((new Story)->qualifyColumn('story_series_id'), (new StorySeries)->qualifyColumn('id'))
+                    ->whereRaw("NOT EXISTS (SELECT * FROM story_like WHERE story_like.story_id = stories.id AND story_like.user_id = " . auth()->id() . ")"),
+            ]);
+    }
+
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
                 self::getTitleTableColumn(),
                 self::getNumberOfStoriesTableColumn(),
+                Tables\Columns\IconColumn::make('user_read_exists')
+                    ->getStateUsing(fn($record) => $record->stories_count && !$record->user_not_read_story_under_series)
+                    ->label('Read')
+                    ->toggleable()
+                    ->alignCenter()
+                    ->trueIcon('heroicon-s-book-open')
+                    ->falseIcon('heroicon-s-lock-closed')
+                    ->trueColor('success')
+                    ->falseColor('secondary'),
+                Tables\Columns\IconColumn::make('user_like_exists')
+                    ->getStateUsing(fn($record) => $record->stories_count && !$record->user_not_like_story_under_series)
+                    ->label('Liked')
+                    ->toggleable()
+                    ->alignCenter()
+                    ->trueIcon('heroicon-s-heart')
+                    ->falseIcon('heroicon-o-heart')
+                    ->trueColor('danger')
+                    ->falseColor('secondary'),
                 self::getDescriptionTableColumn(),
             ])
             ->filters([
