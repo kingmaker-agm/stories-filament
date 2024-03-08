@@ -111,6 +111,7 @@ class StoryResource extends Resource
             RelationManagers\SeriesRelationManager::class,
             RelationManagers\RatingTagsRelationManager::class,
             RelationManagers\TagsRelationManager::class,
+            RelationManagers\CategoriesRelationManager::class,
         ];
     }
 
