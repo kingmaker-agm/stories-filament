@@ -39,6 +39,7 @@ class CategoryResource extends Resource
         return $table
             ->columns([
                 self::getNameTableColumn(),
+                self::getStoriesCountTableColumn(),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -95,6 +96,14 @@ class CategoryResource extends Resource
     {
         return Tables\Columns\TextColumn::make('name')
             ->searchable()
+            ->sortable();
+    }
+
+    public static function getStoriesCountTableColumn(): Tables\Columns\TextColumn
+    {
+        return Tables\Columns\TextColumn::make('stories_count')
+            ->counts('stories')
+            ->label('Stories')
             ->sortable();
     }
 }

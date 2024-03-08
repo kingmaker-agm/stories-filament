@@ -2,8 +2,10 @@
 
 namespace App\Filament\Resources\TagResource\RelationManagers;
 
+use App\Filament\Actions\Story\AttachToCategoriesBulkAction;
 use App\Filament\Actions\Story\AttachToRatingTagsBulkAction;
 use App\Filament\Actions\Story\AttachToTagsBulkAction;
+use App\Filament\Actions\Story\DetachFromCategoriesBulkAction;
 use App\Filament\Actions\Story\DetachFromRatingTagsBulkAction;
 use App\Filament\Actions\Story\DetachFromTagsBulkAction;
 use App\Filament\Resources\StoryResource;
@@ -45,8 +47,10 @@ class StoriesRelationManager extends RelationManager
                     ->toggleable(),
             ])
             ->filters([
-                StoryResource::getTagsFilter(),
+                StoryResource::getUserLikedFilter(),
+                StoryResource::getUserReadFilter(),
                 StoryResource::getRatingTagsFilter(),
+                StoryResource::getCategoryFilter(),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
@@ -68,6 +72,8 @@ class StoriesRelationManager extends RelationManager
             ->bulkActions([
                 Tables\Actions\DetachBulkAction::make()
                     ->requiresConfirmation(),
+                AttachToCategoriesBulkAction::make(),
+                DetachFromCategoriesBulkAction::make(),
                 AttachToTagsBulkAction::make(),
                 DetachFromTagsBulkAction::make(),
                 AttachToRatingTagsBulkAction::make(),

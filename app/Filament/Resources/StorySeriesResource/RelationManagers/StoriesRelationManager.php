@@ -2,8 +2,10 @@
 
 namespace App\Filament\Resources\StorySeriesResource\RelationManagers;
 
+use App\Filament\Actions\Story\AttachToCategoriesBulkAction;
 use App\Filament\Actions\Story\AttachToRatingTagsBulkAction;
 use App\Filament\Actions\Story\AttachToTagsBulkAction;
+use App\Filament\Actions\Story\DetachFromCategoriesBulkAction;
 use App\Filament\Actions\Story\DetachFromRatingTagsBulkAction;
 use App\Filament\Actions\Story\DetachFromTagsBulkAction;
 use App\Filament\Resources\StoryResource;
@@ -54,8 +56,11 @@ class StoriesRelationManager extends RelationManager
             ])
             ->reorderable('story_series_order')
             ->filters([
+                StoryResource::getUserLikedFilter(),
+                StoryResource::getUserReadFilter(),
                 StoryResource::getTagsFilter(),
                 StoryResource::getRatingTagsFilter(),
+                StoryResource::getCategoryFilter(),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
@@ -77,6 +82,8 @@ class StoriesRelationManager extends RelationManager
             ])
             ->bulkActions([
                 Tables\Actions\DissociateBulkAction::make(),
+                AttachToCategoriesBulkAction::make(),
+                DetachFromCategoriesBulkAction::make(),
                 AttachToTagsBulkAction::make(),
                 DetachFromTagsBulkAction::make(),
                 AttachToRatingTagsBulkAction::make(),

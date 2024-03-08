@@ -50,7 +50,7 @@ class AttachToRatingTagsBulkAction extends BulkAction
         );
 
         $this->form([
-            Repeater::make('tags')
+            Repeater::make('rating_tags')
                 ->label('Rating Tags')
                 ->createItemButtonLabel('Add more Rating Tag')
                 ->columnSpan('full')

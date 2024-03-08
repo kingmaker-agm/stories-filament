@@ -33,6 +33,7 @@ class CategoriesRelationManager extends RelationManager
         return $table
             ->columns([
                 CategoryResource::getNameTableColumn(),
+                CategoryResource::getStoriesCountTableColumn(),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make(),

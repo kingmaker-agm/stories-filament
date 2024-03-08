@@ -8,13 +8,16 @@ use App\Actions\Story\ReadStoryAction;
 use App\Actions\Story\RemoveStoryRatingAction;
 use App\Actions\Story\UnlikeStoryAction;
 use App\Actions\Story\UnreadStoryAction;
+use App\Filament\Actions\Story\AttachToCategoriesBulkAction;
 use App\Filament\Actions\Story\AttachToRatingTagsBulkAction;
 use App\Filament\Actions\Story\AttachToTagsBulkAction;
+use App\Filament\Actions\Story\DetachFromCategoriesBulkAction;
 use App\Filament\Actions\Story\DetachFromRatingTagsBulkAction;
 use App\Filament\Actions\Story\DetachFromTagsBulkAction;
 use App\Filament\Forms\Components\Actions\OpenUrlAction;
 use App\Filament\Resources\StoryResource\Pages;
 use App\Filament\Resources\StoryResource\RelationManagers;
+use App\Models\Category;
 use App\Models\RatingTag;
 use App\Models\Story;
 use App\Models\Tag;
@@ -90,6 +93,8 @@ class StoryResource extends Resource
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make()
                     ->requiresConfirmation(),
+                AttachToCategoriesBulkAction::make(),
+                DetachFromCategoriesBulkAction::make(),
                 AttachToTagsBulkAction::make(),
                 DetachFromTagsBulkAction::make(),
                 AttachToRatingTagsBulkAction::make(),
@@ -102,6 +107,7 @@ class StoryResource extends Resource
                 self::getUserRatingFilter(),
                 self::getTagsFilter(),
                 self::getRatingTagsFilter(),
+                self::getCategoryFilter(),
             ]);
     }
 
@@ -279,6 +285,23 @@ class StoryResource extends Resource
                 });
             })
             ->label('Rating Tags');
+    }
+
+    public static function getCategoryFilter()
+    {
+        return Tables\Filters\SelectFilter::make('categories')
+            ->relationship('categories', 'name')
+            ->multiple()
+            ->query(function (Builder $query, array $data) {
+                $ids = $data['values'];
+
+                return $query->where(function (Builder $query) use ($ids) {
+                    foreach ($ids as $id) {
+                        $query->whereHas('categories', fn(Builder $query) => $query->where((new Category)->qualifyColumn('id'), $id));
+                    }
+                });
+            })
+            ->label('Categories');
     }
 
     public static function getLikedTableColumn(): ToggleIconColumn
