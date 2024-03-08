@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Resources\CategoryResource;
 use App\Filament\Resources\RatingTagResource;
 use App\Filament\Resources\StoryResource;
 use App\Filament\Resources\StorySeriesResource;
@@ -19,6 +20,7 @@ class ResourceCountWidget extends Overlook
             StorySeriesResource::class,
             RatingTagResource::class,
             TagResource::class,
+            CategoryResource::class,
         ];
     }
 }
