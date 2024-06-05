@@ -5,9 +5,9 @@ namespace App\Filament\Resources\StoryResource\RelationManagers;
 use App\Filament\Resources\RatingTagResource;
 use App\Models\RatingTag;
 use Filament\Forms;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Resources\Table;
+use Filament\Tables\Table;
 use Filament\Tables;
 
 class RatingTagsRelationManager extends RelationManager
@@ -17,7 +17,7 @@ class RatingTagsRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    public static function form(Form $form): Form
+    public function form(Form $form): Form
     {
         return $form
             ->schema([
@@ -26,7 +26,7 @@ class RatingTagsRelationManager extends RelationManager
             ]);
     }
 
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
             ->defaultSort('rating', 'desc')
@@ -52,7 +52,7 @@ class RatingTagsRelationManager extends RelationManager
                     ->label('Open')
                     ->tooltip('Open in New Tab')
                     ->color('primary')
-                    ->url(fn (RatingTag $record) => RatingTagResource::getUrl('view', $record))
+                    ->url(fn (RatingTag $record) => RatingTagResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab(true),
                 Tables\Actions\DetachAction::make()
                     ->requiresConfirmation(),

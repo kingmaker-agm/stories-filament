@@ -6,9 +6,9 @@ use App\Filament\Resources\CategoryResource\Pages;
 use App\Filament\Resources\CategoryResource\RelationManagers;
 use App\Models\Category;
 use Filament\Forms;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Resources\Table;
+use Filament\Tables\Table;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -77,12 +77,12 @@ class CategoryResource extends Resource
             ->placeholder('Enter the category name')
             ->maxLength(255)
             ->unique(
-                callback: function (Unique $rule) {
+                ignoreRecord: true,
+                modifyRuleUsing: function (Unique $rule) {
                     if (Auth::check()) {
                         $rule->where('user_id', Auth::id());
                     }
-                },
-                ignoreRecord: true
+                }
             );
     }
 

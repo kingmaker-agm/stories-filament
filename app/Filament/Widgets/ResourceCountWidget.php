@@ -7,9 +7,9 @@ use App\Filament\Resources\RatingTagResource;
 use App\Filament\Resources\StoryResource;
 use App\Filament\Resources\StorySeriesResource;
 use App\Filament\Resources\TagResource;
-use Awcodes\Overlook\Overlook;
+use Awcodes\Overlook\Widgets\OverlookWidget;
 
-class ResourceCountWidget extends Overlook
+class ResourceCountWidget extends OverlookWidget
 {
     protected static ?int $sort = -1;
 

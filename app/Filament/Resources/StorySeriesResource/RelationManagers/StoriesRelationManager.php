@@ -11,9 +11,9 @@ use App\Filament\Actions\Story\DetachFromTagsBulkAction;
 use App\Filament\Resources\StoryResource;
 use App\Models\Story;
 use Filament\Forms;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Resources\Table;
+use Filament\Tables\Table;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -27,7 +27,7 @@ class StoriesRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'title';
 
-    public static function form(Form $form): Form
+    public function form(Form $form): Form
     {
         return $form
             ->columns(StoryResource::FORM_COLUMN_COUNT)
@@ -39,7 +39,7 @@ class StoriesRelationManager extends RelationManager
             ]);
     }
 
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
             ->defaultSort('story_series_order', 'asc')

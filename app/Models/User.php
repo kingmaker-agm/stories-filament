@@ -77,7 +77,7 @@ class User extends Authenticatable implements FilamentUser
             ->withTimestamps();
     }
 
-    public function canAccessFilament(): bool
+    public function canAccessPanel(\Filament\Panel $panel): bool
     {
         return Str::endsWith($this->email, '@kingmaker.co.in');
     }

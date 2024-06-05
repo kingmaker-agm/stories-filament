@@ -3,15 +3,14 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Forms\Components\Actions\OpenUrlAction;
-use App\Filament\Resources\StoryResource\RelationManagers\RatingTagsRelationManager;
 use App\Filament\Resources\StorySeriesResource\Pages;
 use App\Filament\Resources\StorySeriesResource\RelationManagers;
 use App\Models\Story;
 use App\Models\StorySeries;
 use Filament\Forms;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Resources\Table;
+use Filament\Tables\Table;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -25,7 +24,7 @@ class StorySeriesResource extends Resource
     protected static ?string $recordTitleAttribute = 'title';
 
     protected static ?string $navigationGroup = "Stories";
-    protected static ?string $navigationIcon = 'heroicon-o-collection';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {
@@ -68,7 +67,7 @@ class StorySeriesResource extends Resource
                     ->trueIcon('heroicon-s-book-open')
                     ->falseIcon('heroicon-s-lock-closed')
                     ->trueColor('success')
-                    ->falseColor('secondary'),
+                    ->falseColor('gray'),
                 Tables\Columns\IconColumn::make('user_like_exists')
                     ->getStateUsing(fn($record) => $record->stories_count && !$record->user_not_like_story_under_series)
                     ->label('Liked')
@@ -77,7 +76,7 @@ class StorySeriesResource extends Resource
                     ->trueIcon('heroicon-s-heart')
                     ->falseIcon('heroicon-o-heart')
                     ->trueColor('danger')
-                    ->falseColor('secondary'),
+                    ->falseColor('gray'),
                 self::getDescriptionTableColumn(),
             ])
             ->filters([

@@ -10,7 +10,7 @@ class ListRatingTags extends ListRecords
 {
     protected static string $resource = RatingTagResource::class;
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             Actions\CreateAction::make()

@@ -6,9 +6,9 @@ use App\Filament\Resources\RatingTagResource\Pages;
 use App\Filament\Resources\RatingTagResource\RelationManagers;
 use App\Models\RatingTag;
 use Filament\Forms;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Resources\Table;
+use Filament\Tables\Table;
 use Filament\Tables;
 
 class RatingTagResource extends Resource

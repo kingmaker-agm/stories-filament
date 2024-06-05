@@ -12,7 +12,7 @@ class ViewTag extends ViewRecord
 {
     protected static string $resource = TagResource::class;
 
-    protected function getHeading(): string|Htmlable
+    public function getHeading(): string|Htmlable
     {
         /** @var Tag $record */
         $record = $this->getRecord();
@@ -21,7 +21,7 @@ class ViewTag extends ViewRecord
     }
 
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             Actions\EditAction::make(),

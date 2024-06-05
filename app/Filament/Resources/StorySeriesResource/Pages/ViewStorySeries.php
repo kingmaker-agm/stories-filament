@@ -11,12 +11,12 @@ class ViewStorySeries extends ViewRecord
 {
     protected static string $resource = StorySeriesResource::class;
 
-    protected function getHeading(): string|Htmlable
+    public function getHeading(): string|Htmlable
     {
         return $this->getRecord()->title;
     }
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             Actions\EditAction::make(),

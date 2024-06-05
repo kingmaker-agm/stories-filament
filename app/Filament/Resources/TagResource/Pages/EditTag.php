@@ -12,7 +12,7 @@ class EditTag extends EditRecord
 {
     protected static string $resource = TagResource::class;
 
-    protected function getHeading(): string|Htmlable
+    public function getHeading(): string|Htmlable
     {
         /** @var Tag $record */
         $record = $this->getRecord();
@@ -20,7 +20,7 @@ class EditTag extends EditRecord
         return $record->name;
     }
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             Actions\ViewAction::make(),

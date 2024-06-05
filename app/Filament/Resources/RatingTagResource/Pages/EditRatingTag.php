@@ -12,7 +12,7 @@ class EditRatingTag extends EditRecord
 {
     protected static string $resource = RatingTagResource::class;
 
-    protected function getHeading(): string|Htmlable
+    public function getHeading(): string|Htmlable
     {
         /** @var RatingTag $record */
         $record = $this->getRecord();
@@ -20,7 +20,7 @@ class EditRatingTag extends EditRecord
         return $record->name;
     }
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             Actions\ViewAction::make(),

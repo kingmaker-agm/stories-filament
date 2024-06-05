@@ -5,9 +5,9 @@ namespace App\Filament\Resources\StoryResource\RelationManagers;
 use App\Filament\Resources\TagResource;
 use App\Models\Tag;
 use Filament\Forms;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Resources\Table;
+use Filament\Tables\Table;
 use Filament\Tables;
 
 class TagsRelationManager extends RelationManager
@@ -17,7 +17,7 @@ class TagsRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    public static function form(Form $form): Form
+    public function form(Form $form): Form
     {
         return $form
             ->schema([
@@ -26,7 +26,7 @@ class TagsRelationManager extends RelationManager
             ]);
     }
 
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
             ->columns([
@@ -48,7 +48,7 @@ class TagsRelationManager extends RelationManager
                     ->icon('heroicon-o-book-open')
                     ->color('primary')
                     ->tooltip('Open in a New Tab')
-                    ->url(fn (Tag $record) => TagResource::getUrl('view', $record))
+                    ->url(fn (Tag $record) => TagResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab(),
                 Tables\Actions\DetachAction::make()
                     ->requiresConfirmation(),

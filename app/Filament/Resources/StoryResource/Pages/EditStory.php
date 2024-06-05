@@ -20,7 +20,7 @@ class EditStory extends EditRecord
 {
     protected static string $resource = StoryResource::class;
 
-    protected function getHeading(): string|Htmlable
+    public function getHeading(): string|Htmlable
     {
         return $this->getRecord()->title;
     }
@@ -73,7 +73,7 @@ class EditStory extends EditRecord
     }
 
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             Actions\ViewAction::make(),

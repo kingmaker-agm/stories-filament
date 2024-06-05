@@ -21,19 +21,17 @@ use App\Models\Category;
 use App\Models\RatingTag;
 use App\Models\Story;
 use App\Models\Tag;
-use Archilex\ToggleIconColumn\Columns\ToggleIconColumn;
 use Filament\Forms;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Resources\Table;
+use Filament\Tables\Table;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Livewire\Component;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\NumberFilter;
 use Yepsua\Filament\Forms\Components\Rating;
+use Yepsua\Filament\Tables\Components\RatingColumn;
 
 class StoryResource extends Resource
 {
@@ -56,12 +54,16 @@ class StoryResource extends Resource
                 Forms\Components\Grid::make(['sm' => 2, 'md' => 3])
                     ->schema([
                         Forms\Components\Toggle::make('user_like_exists')
-                            ->onColor('success')
-                            ->offColor('danger')
+                            ->onColor('danger')
+                            ->offColor('gray')
+                            ->onIcon('heroicon-s-heart')
+                            ->offIcon('heroicon-o-heart')
                             ->label('Liked'),
                         Forms\Components\Toggle::make('user_read_exists')
                             ->onColor('success')
-                            ->offColor('danger')
+                            ->offColor('gray')
+                            ->onIcon('heroicon-s-book-open')
+                            ->offIcon('heroicon-s-book-open')
                             ->label('Read'),
                         Rating::make('user_rating_min_rating')
                             ->label('User Rating')
@@ -159,6 +161,7 @@ class StoryResource extends Resource
         return Tables\Columns\TextColumn::make('body')
             ->formatStateUsing(fn(?string $state) => empty($state) ? '' : Str::words(strip_tags($state), 30))
             ->visibleFrom('lg')
+            ->html()
             ->wrap();
     }
 
@@ -235,7 +238,10 @@ class StoryResource extends Resource
             ->grow(false)
             ->toggleable()
             ->exists('series')
-            ->url(fn (Story $record) => $record->story_series_id ? StorySeriesResource::getUrl('view', $record->story_series_id) : null)
+            ->url(fn (Story $record) => $record->story_series_id
+                ? StorySeriesResource::getUrl('view', ['record' => $record->story_series_id])
+                : null
+            )
             ->options([
                 'heroicon-o-check' => true,
                 'heroicon-o-minus' => false,
@@ -304,15 +310,14 @@ class StoryResource extends Resource
             ->label('Categories');
     }
 
-    public static function getLikedTableColumn(): ToggleIconColumn
+    public static function getLikedTableColumn(): Tables\Columns\ToggleColumn
     {
-        return ToggleIconColumn::make('user_like_exists')
+        return Tables\Columns\ToggleColumn::make('user_like_exists')
             ->exists('userLike')
             ->label('Liked')
             ->sortable()
             ->toggleable()
             ->alignCenter()
-            ->getStateUsing(fn(Story $record) => $record->user_like_exists)
             ->updateStateUsing(function (Story $record, $state) {
                 if ($state) {
                     $likeStoryAction = new LikeStoryAction;
@@ -327,7 +332,7 @@ class StoryResource extends Resource
             ->onIcon('heroicon-s-heart')
             ->offIcon('heroicon-o-heart')
             ->onColor('danger')
-            ->offColor('danger');
+            ->offColor('gray');
     }
 
     public static function getUserRatingTableColumn(): Tables\Columns\SelectColumn
@@ -450,15 +455,14 @@ class StoryResource extends Resource
             });
     }
 
-    public static function getReadTableColumn(): ToggleIconColumn
+    public static function getReadTableColumn(): Tables\Columns\ToggleColumn
     {
-        return ToggleIconColumn::make('user_read_exists')
+        return Tables\Columns\ToggleColumn::make('user_read_exists')
             ->exists('userRead')
             ->label('Read')
             ->sortable()
             ->toggleable()
             ->alignCenter()
-            ->getStateUsing(fn(Story $record) => $record->user_read_exists)
             ->updateStateUsing(function (Story $record, $state) {
                 if ($state) {
                     $readStoryAction = new ReadStoryAction();
@@ -471,9 +475,9 @@ class StoryResource extends Resource
                 return $state;
             })
             ->onIcon('heroicon-s-book-open')
-            ->offIcon('heroicon-s-lock-closed')
+            ->offIcon('heroicon-s-book-open')
             ->onColor('success')
-            ->offColor('secondary');
+            ->offColor('gray');
     }
 
     public static function getUserReadFilter(): Tables\Filters\TernaryFilter

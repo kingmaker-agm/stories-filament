@@ -13,7 +13,7 @@ class ViewStory extends ViewRecord
 {
     protected static string $resource = StoryResource::class;
 
-    protected function getHeading(): string|Htmlable
+    public function getHeading(): string|Htmlable
     {
         return $this->getRecord()->title;
     }
@@ -23,7 +23,7 @@ class ViewStory extends ViewRecord
         return StoryResource::resolveSingleRecord($key);
     }
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             Actions\EditAction::make(),
