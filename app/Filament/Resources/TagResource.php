@@ -83,7 +83,8 @@ class TagResource extends Resource
                     ->pluck('primary')
             )
             ->unique(
-                callback: function (Unique $rule, callable $get) {
+                ignoreRecord: true,
+                modifyRuleUsing: function (Unique $rule, callable $get) {
                     $primary = $get('primary');
                     $secondary = $get('secondary');
 
@@ -93,8 +94,8 @@ class TagResource extends Resource
                         return $rule->where('primary', $primary)
                             ->where('secondary', $secondary);
                     }
-                },
-                ignoreRecord: true);
+                }
+            );
     }
 
     public static function getSecondaryNameField(): Forms\Components\TextInput
@@ -102,10 +103,10 @@ class TagResource extends Resource
         return Forms\Components\TextInput::make('secondary')
             ->maxLength(255)
             ->unique(
-                callback: fn(Unique $rule, callable $get) => $rule
+                ignoreRecord: true,
+                modifyRuleUsing: fn(Unique $rule, callable $get) => $rule
                     ->where('primary', $get('primary'))
-                    ->where('secondary', $get('secondary')),
-                ignoreRecord: true
+                    ->where('secondary', $get('secondary'))
             );
     }
 
