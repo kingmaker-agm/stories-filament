@@ -26,14 +26,14 @@ class DetachFromRatingTagsBulkAction extends BulkAction
 
     public function getPluralModelLabel(): string
     {
-        return 'Detach Rating Tags from Stories';
+        return 'Detach Rating Tags';
     }
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->label('Detach Rating Tags from Stories');
+        $this->label('Detach Rating Tags');
         $this->color('danger');
         $this->icon('heroicon-o-scissors');
 

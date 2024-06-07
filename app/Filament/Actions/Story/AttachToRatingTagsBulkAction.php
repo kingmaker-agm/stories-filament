@@ -28,14 +28,14 @@ class AttachToRatingTagsBulkAction extends BulkAction
 
     public function getPluralModelLabel(): string
     {
-        return 'Attach Rating Tags to Stories';
+        return 'Attach Rating Tags';
     }
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->label('Attach Rating Tags to Stories');
+        $this->label('Attach Rating Tags');
         $this->color('success');
         $this->icon('heroicon-o-paper-clip');
 

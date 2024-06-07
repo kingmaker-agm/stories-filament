@@ -72,12 +72,9 @@ class StoriesRelationManager extends RelationManager
             ->bulkActions([
                 Tables\Actions\DetachBulkAction::make()
                     ->requiresConfirmation(),
-                AttachToCategoriesBulkAction::make(),
-                DetachFromCategoriesBulkAction::make(),
-                AttachToTagsBulkAction::make(),
-                DetachFromTagsBulkAction::make(),
-                AttachToRatingTagsBulkAction::make(),
-                DetachFromRatingTagsBulkAction::make(),
+                StoryResource::getCategoriesBulkAction(),
+                StoryResource::getTagsBulkAction(),
+                StoryResource::getRatingTagsBulkAction(),
             ]);
     }
 }

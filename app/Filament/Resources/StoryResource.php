@@ -93,14 +93,10 @@ class StoryResource extends Resource
                     ->requiresConfirmation(),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make()
-                    ->requiresConfirmation(),
-                AttachToCategoriesBulkAction::make(),
-                DetachFromCategoriesBulkAction::make(),
-                AttachToTagsBulkAction::make(),
-                DetachFromTagsBulkAction::make(),
-                AttachToRatingTagsBulkAction::make(),
-                DetachFromRatingTagsBulkAction::make(),
+                self::getDeleteBulkAction(),
+                self::getCategoriesBulkAction(),
+                self::getTagsBulkAction(),
+                self::getRatingTagsBulkAction(),
             ])
             ->filters([
                 self::getSeriesFilter(),
@@ -488,5 +484,47 @@ class StoryResource extends Resource
                 true: fn(Builder $query) => $query->whereHas('userRead'),
                 false: fn(Builder $query) => $query->whereDoesntHave('userRead'),
             );
+    }
+
+    public static function getCategoriesBulkAction(): Tables\Actions\BulkActionGroup
+    {
+        return Tables\Actions\BulkActionGroup::make([
+            AttachToCategoriesBulkAction::make(),
+            DetachFromCategoriesBulkAction::make(),
+        ])
+            ->label('Categories')
+            ->icon('heroicon-o-bookmark')
+            ->outlined()
+            ->color('info');
+    }
+
+    public static function getTagsBulkAction(): Tables\Actions\BulkActionGroup
+    {
+        return Tables\Actions\BulkActionGroup::make([
+            AttachToTagsBulkAction::make(),
+            DetachFromTagsBulkAction::make(),
+        ])
+            ->label('Tags')
+            ->icon('heroicon-o-hashtag')
+            ->outlined()
+            ->color('success');
+    }
+
+    public static function getRatingTagsBulkAction(): Tables\Actions\BulkActionGroup
+    {
+        return Tables\Actions\BulkActionGroup::make([
+            AttachToRatingTagsBulkAction::make(),
+            DetachFromRatingTagsBulkAction::make(),
+        ])
+            ->label('Rating Tags')
+            ->icon('heroicon-o-tag')
+            ->outlined()
+            ->color('warning');
+    }
+
+    public static function getDeleteBulkAction(): Tables\Actions\DeleteBulkAction
+    {
+        return Tables\Actions\DeleteBulkAction::make()
+            ->requiresConfirmation();
     }
 }

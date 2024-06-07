@@ -26,14 +26,14 @@ class AttachToTagsBulkAction extends BulkAction
 
     public function getPluralModelLabel(): string
     {
-        return 'Attach Tags to Stories';
+        return 'Attach Tags';
     }
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->label('Attach Tags to Stories');
+        $this->label('Attach Tags');
         $this->color('success');
         $this->icon('heroicon-o-paper-clip');
 

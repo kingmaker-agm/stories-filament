@@ -26,14 +26,14 @@ class DetachFromTagsBulkAction extends BulkAction
 
     public function getPluralModelLabel(): string
     {
-        return 'Detach Tags from Stories';
+        return 'Detach Tags';
     }
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->label('Detach Tags from Stories');
+        $this->label('Detach Tags');
         $this->color('danger');
         $this->icon('heroicon-o-scissors');
 

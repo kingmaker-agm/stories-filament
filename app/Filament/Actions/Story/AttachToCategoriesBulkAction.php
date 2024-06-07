@@ -26,14 +26,14 @@ class AttachToCategoriesBulkAction extends BulkAction
 
     public function getPluralModelLabel(): string
     {
-        return 'Attach Categories to Stories';
+        return 'Attach Categories';
     }
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->label('Attach Categories to Stories');
+        $this->label('Attach Categories');
         $this->color('success');
         $this->icon('heroicon-o-paper-clip');
 
