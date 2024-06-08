@@ -46,6 +46,7 @@ class AdminPanelProvider extends PanelProvider
                         '2xl' => null,
                     ]),
             ])
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->pages([
                 Pages\Dashboard::class,
             ])
