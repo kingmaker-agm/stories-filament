@@ -16,4 +16,16 @@ class Tag extends Model
             ->using(StoryTag::class)
             ->withTimestamps();
     }
+
+    public function name()
+    {
+        return Attribute::get(function (): string {
+           $name = $this->primary;
+            if ($this->secondary) {
+                $name .= ' : ' . $this->secondary;
+            }
+
+            return $name;
+        });
+    }
 }

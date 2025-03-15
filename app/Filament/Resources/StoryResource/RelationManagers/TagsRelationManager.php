@@ -17,6 +17,11 @@ class TagsRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    public function isReadOnly(): bool
+    {
+        return false;
+    }
+
     public function form(Form $form): Form
     {
         return $form

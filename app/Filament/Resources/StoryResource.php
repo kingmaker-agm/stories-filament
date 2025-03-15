@@ -17,15 +17,25 @@ use App\Filament\Actions\Story\DetachFromTagsBulkAction;
 use App\Filament\Forms\Components\Actions\OpenUrlAction;
 use App\Filament\Resources\StoryResource\Pages;
 use App\Filament\Resources\StoryResource\RelationManagers;
+use App\Infolists\Components\DividerEntry;
 use App\Models\Category;
 use App\Models\RatingTag;
 use App\Models\Story;
 use App\Models\Tag;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Grid;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Table;
 use Filament\Tables;
+use IbrahimBougaoua\FilamentRatingStar\Entries\Components\RatingStar as RatingStarEntry;
+use Icetalker\FilamentTableRepeatableEntry\Infolists\Components\TableRepeatableEntry;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -106,6 +116,106 @@ class StoryResource extends Resource
                 self::getTagsFilter(),
                 self::getRatingTagsFilter(),
                 self::getCategoryFilter(),
+            ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->columns([
+                'xs' => 1,
+                'sm' => 2,
+                'lg' => 4
+            ])
+            ->schema([
+                Section::make("Story")
+                    ->heading(null)
+                    ->columnSpan([
+                        'sm' => 2,
+                        'lg' => 3
+                    ])
+                    ->schema([
+                        Grid::make(columns: [
+                                'sm' => 4,
+                                'md' => 6,
+                                'lg' => 8,
+                            ])
+                            ->schema([
+                                TextEntry::make('title')
+                                    ->label('Title')
+                                    ->color("primary")
+                                    ->size('lg')
+                                    ->weight(FontWeight::Bold)
+                                    ->columnSpan([
+                                        'sm' => 3,
+                                        'md' => 5,
+                                        'lg' => 7,
+                                    ]),
+                                Grid::make(2)
+                                    ->columnSpan(1)
+                                    ->schema([
+                                        IconEntry::make('userLike.id')
+                                            ->label("Liked")
+                                            ->hiddenLabel()
+                                            ->boolean()
+                                            ->trueIcon('heroicon-s-heart')
+                                            ->falseIcon('heroicon-o-heart')
+                                            ->trueColor('danger')
+                                            ->falseColor('gray'),
+                                        IconEntry::make('userRead.id')
+                                            ->label("Read")
+                                            ->hiddenLabel()
+                                            ->boolean()
+                                            ->trueIcon('heroicon-s-book-open')
+                                            ->falseIcon('heroicon-s-book-open')
+                                            ->trueColor('success')
+                                            ->falseColor('gray')
+                                    ]),
+                            ]),
+                        DividerEntry::make('divider'),
+                        TextEntry::make('body')
+                            ->hiddenLabel()
+                            ->html(),
+                    ]),
+
+                Grid::make(1)
+                    ->columnSpan(1)
+                    ->schema([
+                        Section::make("Details")
+                            ->columnSpan(1)
+                            ->schema([
+                                TextEntry::make('user.name')
+                                    ->label('Author')
+                                    ->icon('heroicon-o-user')
+                                    ->visible(fn ($record) => !!$record->user),
+                                TextEntry::make('original_url')
+                                    ->label('Original URL')
+                                    ->limit(25)
+                                    ->icon('heroicon-o-link')
+                                    ->visible(fn ($record) => !!$record->original_url)
+                                    ->url(
+                                        url: fn ($record) => $record->original_url,
+                                        shouldOpenInNewTab: true
+                                    ),
+                                RatingStarEntry::make('userRating.rating')
+                                    ->label('User Rating'),
+                                TextEntry::make('tags.name')
+                                    ->label('Tags')
+                                    ->icon('heroicon-o-hashtag')
+                                    ->badge()
+                                    ->color('success'),
+                            ]),
+
+                        TableRepeatableEntry::make('ratingTags')
+                            ->label("Ratings")
+                            ->hiddenLabel()
+                            ->schema([
+                                TextEntry::make('name')
+                                    ->label('Label'),
+                                TextEntry::make('pivot.rating')
+                                    ->label('Rating')
+                            ])
+                    ]),
             ]);
     }
 
