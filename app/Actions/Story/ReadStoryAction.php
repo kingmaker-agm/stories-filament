@@ -12,5 +12,6 @@ class ReadStoryAction
         $user = $user instanceof User ? $user : User::findOrFail($user);
 
         $story->readUsers()->syncWithoutDetaching([$user->id]);
+        $story->refresh();
     }
 }

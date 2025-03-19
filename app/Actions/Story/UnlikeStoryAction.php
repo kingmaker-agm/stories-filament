@@ -12,5 +12,6 @@ class UnlikeStoryAction
         $user = $user instanceof User ? $user : User::findOrFail($user);
 
         $story->likedUsers()->detach($user->id);
+        $story->refresh();
     }
 }

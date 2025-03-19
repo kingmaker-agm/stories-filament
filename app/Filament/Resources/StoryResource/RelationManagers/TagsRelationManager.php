@@ -55,6 +55,8 @@ class TagsRelationManager extends RelationManager
                     ->tooltip('Open in a New Tab')
                     ->url(fn (Tag $record) => TagResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab(),
+                Tables\Actions\ViewAction::make()
+                    ->url(fn (Tag $record) => TagResource::getUrl('view', ['record' => $record])),
                 Tables\Actions\DetachAction::make()
                     ->requiresConfirmation(),
             ])

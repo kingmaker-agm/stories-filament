@@ -12,5 +12,6 @@ class UnreadStoryAction
         $user = $user instanceof User ? $user : User::findOrFail($user);
 
         $story->readUsers()->detach([$user->id]);
+        $story->refresh();
     }
 }

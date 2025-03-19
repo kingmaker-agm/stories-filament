@@ -55,6 +55,8 @@ class CategoriesRelationManager extends RelationManager
                     ->tooltip('Open in a New Tab')
                     ->url(fn (Category $record) => CategoryResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab(),
+                Tables\Actions\ViewAction::make()
+                    ->url(fn (Category $record) => CategoryResource::getUrl('view', ['record' => $record])),
                 Tables\Actions\DetachAction::make(),
             ])
             ->bulkActions([

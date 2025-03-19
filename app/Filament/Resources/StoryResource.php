@@ -24,7 +24,9 @@ use App\Models\Story;
 use App\Models\Tag;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Actions as InfolistActions;
 use Filament\Infolists\Components\Grid;
+use Filament\Infolists\Components\Group;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\Section;
@@ -32,13 +34,17 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\IconPosition;
 use Filament\Tables\Table;
 use Filament\Tables;
 use IbrahimBougaoua\FilamentRatingStar\Entries\Components\RatingStar as RatingStarEntry;
+use IbrahimBougaoua\FilamentRatingStar\Forms\Components\RatingStar;
 use Icetalker\FilamentTableRepeatableEntry\Infolists\Components\TableRepeatableEntry;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Livewire\Livewire;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\NumberFilter;
 use Yepsua\Filament\Forms\Components\Rating;
 use Yepsua\Filament\Tables\Components\RatingColumn;
@@ -121,6 +127,20 @@ class StoryResource extends Resource
 
     public static function infolist(Infolist $infolist): Infolist
     {
+        $repeatableSeriesStoryMatch = function ($matchValue, $nonMatchValue = null) {
+            return function (Story $record) use ($matchValue, $nonMatchValue) {
+                /** @var Pages\ViewStory $viewPage */
+                $viewPage = Livewire::current();
+
+                /** @var Story $story Story being viewed. */
+                $story = $viewPage->getRecord();
+
+                return $story->is($record)
+                    ? $matchValue
+                    : $nonMatchValue;
+            };
+        };
+
         return $infolist
             ->columns([
                 'xs' => 1,
@@ -136,7 +156,7 @@ class StoryResource extends Resource
                     ])
                     ->schema([
                         Grid::make(columns: [
-                                'sm' => 4,
+                                'default' => 4,
                                 'md' => 6,
                                 'lg' => 8,
                             ])
@@ -147,15 +167,19 @@ class StoryResource extends Resource
                                     ->size('lg')
                                     ->weight(FontWeight::Bold)
                                     ->columnSpan([
-                                        'sm' => 3,
+                                        'default' => 3,
                                         'md' => 5,
                                         'lg' => 7,
                                     ]),
-                                Grid::make(2)
+                                Grid::make([
+                                    'default' => 2
+                                ])
                                     ->columnSpan(1)
                                     ->schema([
                                         IconEntry::make('userLike.id')
                                             ->label("Liked")
+                                            ->tooltip("You liked the Story")
+                                            ->columnSpan(1)
                                             ->hiddenLabel()
                                             ->boolean()
                                             ->trueIcon('heroicon-s-heart')
@@ -164,6 +188,8 @@ class StoryResource extends Resource
                                             ->falseColor('gray'),
                                         IconEntry::make('userRead.id')
                                             ->label("Read")
+                                            ->tooltip("You read the Story")
+                                            ->columnSpan(1)
                                             ->hiddenLabel()
                                             ->boolean()
                                             ->trueIcon('heroicon-s-book-open')
@@ -176,6 +202,58 @@ class StoryResource extends Resource
                         TextEntry::make('body')
                             ->hiddenLabel()
                             ->html(),
+
+                        InfolistActions::make([
+                            InfolistActions\Action::make('like')
+                                ->label('Like')
+                                ->icon('heroicon-s-heart')
+                                ->color('danger')
+                                ->visible(fn (Story $record) => !$record->userLike)
+                                ->action(function (Story $record, LikeStoryAction $likeStoryAction) {
+                                    $likeStoryAction->execute($record, Auth::user());
+                                }),
+                            InfolistActions\Action::make('unlike')
+                                ->label('Unlike')
+                                ->icon('heroicon-o-heart')
+                                ->color('danger')
+                                ->outlined()
+                                ->visible(fn (Story $record) => $record->userLike)
+                                ->action(function (Story $record, UnlikeStoryAction $unlikeStoryAction) {
+                                    $unlikeStoryAction->execute($record, Auth::user());
+                                }),
+                            InfolistActions\Action::make('read')
+                                ->label('Mark as Read')
+                                ->icon('heroicon-s-book-open')
+                                ->color('success')
+                                ->visible(fn (Story $record) => !$record->userRead)
+                                ->action(function (Story $record, ReadStoryAction $readStoryAction) {
+                                    $readStoryAction->execute($record, Auth::user());
+                                }),
+                            InfolistActions\Action::make('unread')
+                                ->label('Mark as Unread')
+                                ->icon('heroicon-s-bookmark-slash')
+                                ->color('success')
+                                ->outlined()
+                                ->visible(fn (Story $record) => $record->userRead)
+                                ->action(function (Story $record, UnreadStoryAction $unreadStoryAction) {
+                                    $unreadStoryAction->execute($record, Auth::user());
+                                }),
+                            InfolistActions\Action::make('rating')
+                                ->label('Make Rating')
+                                ->icon('heroicon-s-star')
+                                ->color('warning')
+                                ->outlined()
+                                ->modalHeading("Update Story Rating")
+                                ->form([
+                                    RatingStar::make('rating')
+                                        ->label("Story Rating")
+                                        ->default(fn (Story $record) => $record->userRating?->rating ?? 0)
+                                        ->required()
+                                ])
+                                ->action(function (Story $record, array $data, RateStoryAction $rateStoryAction) {
+                                    $rateStoryAction->execute($record, Auth::user(), $data['rating']);
+                                })
+                        ]),
                     ]),
 
                 Grid::make(1)
@@ -201,6 +279,7 @@ class StoryResource extends Resource
                                     ->label('User Rating'),
                                 TextEntry::make('tags.name')
                                     ->label('Tags')
+                                    ->visible(fn (Story $record) => $record->tags->count() > 0)
                                     ->icon('heroicon-o-hashtag')
                                     ->badge()
                                     ->color('success'),
@@ -209,12 +288,32 @@ class StoryResource extends Resource
                         TableRepeatableEntry::make('ratingTags')
                             ->label("Ratings")
                             ->hiddenLabel()
+                            ->visible(fn (Story $record) => $record->ratingTags()->count() > 0)
                             ->schema([
                                 TextEntry::make('name')
                                     ->label('Label'),
                                 TextEntry::make('pivot.rating')
                                     ->label('Rating')
-                            ])
+                            ]),
+
+                        Section::make('Series')
+                            ->visible(fn (Story $record) => !! $record->series)
+                            ->collapsible()
+                            ->schema([
+                                RepeatableEntry::make('series.stories')
+                                    ->label("Series")
+                                    ->hiddenLabel()
+                                    ->contained(false)
+                                    ->schema([
+                                        TextEntry::make('title')
+                                            ->label('Title')
+                                            ->hiddenLabel()
+                                            ->icon($repeatableSeriesStoryMatch('heroicon-s-arrow-right'))
+                                            ->iconPosition(IconPosition::Before)
+                                            ->weight($repeatableSeriesStoryMatch(FontWeight::Bold))
+                                            ->url(fn (Story $record) => StoryResource::getUrl('view', ['record' => $record]))
+                                    ]),
+                            ]),
                     ]),
             ]);
     }

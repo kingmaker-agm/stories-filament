@@ -12,5 +12,6 @@ class RateStoryAction
         $user = $user instanceof User ? $user : User::findOrFail($user);
 
         $story->ratedUsers()->syncWithoutDetaching([$user->id => ['rating' => $rating]]);
+        $story->refresh();
     }
 }

@@ -116,6 +116,8 @@ class SeriesRelationManager extends RelationManager
                     ->url(fn (StorySeries $record) => StorySeriesResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab()
                     ->tooltip("Open in new tab"),
+                Tables\Actions\ViewAction::make()
+                    ->url(fn (StorySeries $record) => StorySeriesResource::getUrl('view', ['record' => $record])),
             ]);
     }
 }

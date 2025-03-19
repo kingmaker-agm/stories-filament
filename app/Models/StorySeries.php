@@ -13,6 +13,7 @@ class StorySeries extends Model
 
     public function stories()
     {
-        return $this->hasMany(Story::class, 'story_series_id');
+        return $this->hasMany(Story::class, 'story_series_id')
+            ->orderBy('story_series_order', 'asc');
     }
 }

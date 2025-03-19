@@ -59,6 +59,8 @@ class RatingTagsRelationManager extends RelationManager
                     ->color('primary')
                     ->url(fn (RatingTag $record) => RatingTagResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab(true),
+                Tables\Actions\ViewAction::make()
+                    ->url(fn (RatingTag $record) => RatingTagResource::getUrl('view', ['record' => $record])),
                 Tables\Actions\DetachAction::make()
                     ->requiresConfirmation(),
             ])

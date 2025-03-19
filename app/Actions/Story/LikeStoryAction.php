@@ -12,5 +12,6 @@ class LikeStoryAction
         $user = $user instanceof User ? $user : User::findOrFail($user);
 
         $story->likedUsers()->syncWithoutDetaching([$user->id]);
+        $story->refresh();
     }
 }
