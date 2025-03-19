@@ -4,10 +4,19 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TagResource\Pages;
 use App\Filament\Resources\TagResource\RelationManagers;
+use App\Models\Story;
 use App\Models\Tag;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Actions;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\Split;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\IconPosition;
 use Filament\Tables\Table;
 use Filament\Tables;
 use Illuminate\Validation\Rules\Unique;
@@ -51,6 +60,67 @@ class TagResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
+            ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->columns(1)
+            ->schema([
+                RepeatableEntry::make('stories')
+                    ->hiddenLabel()
+                    ->grid([
+                        'default' => 1,
+                        'sm' => 2,
+                        'md' => 3,
+                        'xl' => 4,
+                    ])
+                    ->columns(1)
+                    ->schema([
+                        TextEntry::make('title')
+                            ->hiddenLabel()
+                            ->weight(FontWeight::Bold),
+                        Actions::make([
+                            Actions\Action::make('read')
+                                ->color('primary')
+                                ->icon('heroicon-o-eye')
+                                ->size('sm')
+                                ->link()
+                                ->url(fn (Story $record) => StoryResource::getUrl('view', ['record' => $record]))
+                        ]),
+                        TextEntry::make('body')
+                            ->hiddenLabel()
+                            ->formatStateUsing(fn (string $state) => strip_tags($state))
+                            ->words(25),
+                        Split::make([
+                                IconEntry::make('userLike.id')
+                                    ->label("Liked")
+                                    ->tooltip("You liked the Story")
+                                    ->columnSpan(1)
+                                    ->grow(false)
+                                    ->hiddenLabel()
+                                    ->boolean()
+                                    ->visible(fn (Story $record) => !!$record->userLike)
+                                    ->trueIcon('heroicon-s-heart')
+                                    ->falseIcon('heroicon-o-heart')
+                                    ->trueColor('danger')
+                                    ->falseColor('gray'),
+                                IconEntry::make('userRead.id')
+                                    ->label("Read")
+                                    ->tooltip("You read the Story")
+                                    ->columnSpan(1)
+                                    ->grow(false)
+                                    ->hiddenLabel()
+                                    ->boolean()
+                                    ->visible(fn (Story $record) => !!$record->userRead)
+                                    ->trueIcon('heroicon-s-book-open')
+                                    ->falseIcon('heroicon-s-book-open')
+                                    ->trueColor('success')
+                                    ->falseColor('gray')
+                            ]
+                        ),
+                    ])
             ]);
     }
 

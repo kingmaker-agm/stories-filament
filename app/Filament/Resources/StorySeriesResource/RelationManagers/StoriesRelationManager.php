@@ -78,6 +78,9 @@ class StoriesRelationManager extends RelationManager
                     ->url(fn (Story $record) => StoryResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab()
                     ->tooltip("Open in new tab"),
+                Tables\Actions\ViewAction::make('view')
+                    ->label('View')
+                    ->url(fn (Story $record) => StoryResource::getUrl('view', ['record' => $record])),
                 Tables\Actions\DissociateAction::make(),
             ])
             ->bulkActions([

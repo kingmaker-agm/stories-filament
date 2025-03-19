@@ -27,4 +27,9 @@ class ViewRatingTag extends ViewRecord
             Actions\DeleteAction::make(),
         ];
     }
+
+    public function getRelationManagers(): array
+    {
+        return [];
+    }
 }

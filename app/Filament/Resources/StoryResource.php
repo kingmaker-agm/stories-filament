@@ -175,6 +175,7 @@ class StoryResource extends Resource
                                     'default' => 2
                                 ])
                                     ->columnSpan(1)
+                                    ->visible(fn (Story $record) => !!$record->userRead || !!$record->userLike)
                                     ->schema([
                                         IconEntry::make('userLike.id')
                                             ->label("Liked")
@@ -182,6 +183,7 @@ class StoryResource extends Resource
                                             ->columnSpan(1)
                                             ->hiddenLabel()
                                             ->boolean()
+                                            ->visible(fn (Story $record) => !!$record->userLike)
                                             ->trueIcon('heroicon-s-heart')
                                             ->falseIcon('heroicon-o-heart')
                                             ->trueColor('danger')
@@ -192,6 +194,7 @@ class StoryResource extends Resource
                                             ->columnSpan(1)
                                             ->hiddenLabel()
                                             ->boolean()
+                                            ->visible(fn (Story $record) => !!$record->userRead)
                                             ->trueIcon('heroicon-s-book-open')
                                             ->falseIcon('heroicon-s-book-open')
                                             ->trueColor('success')

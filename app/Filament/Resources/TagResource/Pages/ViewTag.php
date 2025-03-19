@@ -20,6 +20,10 @@ class ViewTag extends ViewRecord
         return $record->name;
     }
 
+    public function getRelationManagers(): array
+    {
+        return [];
+    }
 
     protected function getHeaderActions(): array
     {

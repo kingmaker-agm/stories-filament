@@ -16,6 +16,7 @@ class RatingTag extends Model
         return $this->belongsToMany(Story::class)
             ->using(RatingTagStory::class)
             ->withPivot('rating')
-            ->withTimestamps();
+            ->withTimestamps()
+            ->orderBy('rating', 'desc');
     }
 }

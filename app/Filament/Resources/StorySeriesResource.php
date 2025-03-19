@@ -5,11 +5,18 @@ namespace App\Filament\Resources;
 use App\Filament\Forms\Components\Actions\OpenUrlAction;
 use App\Filament\Resources\StorySeriesResource\Pages;
 use App\Filament\Resources\StorySeriesResource\RelationManagers;
+use App\Infolists\Components\DividerEntry;
 use App\Models\Story;
 use App\Models\StorySeries;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Group;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\IconPosition;
 use Filament\Tables\Table;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
@@ -91,6 +98,39 @@ class StorySeriesResource extends Resource
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make()
                     ->requiresConfirmation(),
+            ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->columns(1)
+            ->schema([
+                Section::make("Story Series")
+                    ->heading(null)
+                    ->schema([
+                        TextEntry::make('title')
+                            ->label('Title')
+                            ->color("primary")
+                            ->size('lg')
+                            ->weight(FontWeight::Bold),
+                        TextEntry::make('original_url')
+                            ->label('Original URL')
+                            ->visible(fn (StorySeries $record): bool => !empty($record->original_url))
+                            ->icon('heroicon-s-link')
+                            ->iconPosition(IconPosition::Before)
+                            ->url(
+                                fn (StorySeries $record): string => $record->original_url,
+                                shouldOpenInNewTab: true
+                            ),
+                        Group::make([
+                            DividerEntry::make('description_divider'),
+                            TextEntry::make('description')
+                                ->hiddenLabel()
+                                ->html(),
+                        ])
+                        ->visible(fn (StorySeries $record): bool => !empty($record->description))
+                    ])
             ]);
     }
 
