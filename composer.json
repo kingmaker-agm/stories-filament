@@ -13,6 +13,7 @@
         "icetalker/filament-table-repeatable-entry": "^1.0",
         "kingmaker/filament-flex-layout": "^1.0",
         "laravel/framework": "^v11.44",
+        "laravel/nightwatch": "^1.10",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "league/flysystem-aws-s3-v3": "^3.15",
