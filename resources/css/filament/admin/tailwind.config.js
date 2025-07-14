@@ -9,5 +9,11 @@ export default {
 
         // Awcodes Overlook plugin
         './vendor/awcodes/overlook/resources/views/**/*.blade.php',
+
+        // Kingmake FlexLayout plugin
+        './vendor/kingmaker/filament-flex-layout/resources/views/**/*.blade.php',
+    ],
+    safelist: [
+        { pattern: /^gap-/ },
     ],
 }

@@ -11,6 +11,7 @@
         "filament/filament": "^3.2",
         "ibrahimbougaoua/filament-rating-star": "^1.0",
         "icetalker/filament-table-repeatable-entry": "^1.0",
+        "kingmaker/filament-flex-layout": "^1.0",
         "laravel/framework": "^v11.44",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",

@@ -20,6 +20,7 @@ use Filament\Support\Enums\IconPosition;
 use Filament\Tables\Table;
 use Filament\Tables;
 use Illuminate\Validation\Rules\Unique;
+use Kingmaker\FilamentFlexLayout\Infolists\Flex;
 
 class TagResource extends Resource
 {
@@ -93,7 +94,7 @@ class TagResource extends Resource
                             ->hiddenLabel()
                             ->formatStateUsing(fn (string $state) => strip_tags($state))
                             ->words(25),
-                        Split::make([
+                        Flex::make([
                                 IconEntry::make('userLike.id')
                                     ->label("Liked")
                                     ->tooltip("You liked the Story")
@@ -119,7 +120,9 @@ class TagResource extends Resource
                                     ->trueColor('success')
                                     ->falseColor('gray')
                             ]
-                        ),
+                        )
+                        ->horizontallyArrangeEnd()
+                        ->gap(2),
                     ])
             ]);
     }

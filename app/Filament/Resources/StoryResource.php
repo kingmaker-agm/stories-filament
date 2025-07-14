@@ -44,6 +44,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Kingmaker\FilamentFlexLayout\Forms\Flex;
 use Livewire\Livewire;
 use Webbingbrasil\FilamentAdvancedFilter\Filters\NumberFilter;
 use Yepsua\Filament\Forms\Components\Rating;
@@ -67,21 +68,26 @@ class StoryResource extends Resource
                 self::getTitleFormField(),
                 self::getOriginalUrlFormField(),
                 self::getUserNameFormField(),
-                Forms\Components\Grid::make(['sm' => 2, 'md' => 3])
+                Flex::make([])
+                    ->horizontallyArrangeStart()
+                    ->gap(12)
                     ->schema([
                         Forms\Components\Toggle::make('user_like_exists')
+                            ->grow(false)
                             ->onColor('danger')
                             ->offColor('gray')
                             ->onIcon('heroicon-s-heart')
                             ->offIcon('heroicon-o-heart')
                             ->label('Liked'),
                         Forms\Components\Toggle::make('user_read_exists')
+                            ->grow(false)
                             ->onColor('success')
                             ->offColor('gray')
                             ->onIcon('heroicon-s-book-open')
                             ->offIcon('heroicon-s-book-open')
                             ->label('Read'),
                         Rating::make('user_rating_min_rating')
+                            ->grow(false)
                             ->label('User Rating')
                             ->min(1)
                             ->max(5),
