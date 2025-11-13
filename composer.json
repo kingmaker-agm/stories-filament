@@ -6,7 +6,6 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "archilex/filament-toggle-icon-column": "^3.1",
         "awcodes/overlook": "^2.2",
         "filament/filament": "^3.2",
         "ibrahimbougaoua/filament-rating-star": "^1.0",

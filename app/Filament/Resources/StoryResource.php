@@ -10,9 +10,11 @@ use App\Actions\Story\UnlikeStoryAction;
 use App\Actions\Story\UnreadStoryAction;
 use App\Filament\Actions\Story\AttachToCategoriesBulkAction;
 use App\Filament\Actions\Story\AttachToRatingTagsBulkAction;
+use App\Filament\Actions\Story\AttachToStorySeriesBulkAction;
 use App\Filament\Actions\Story\AttachToTagsBulkAction;
 use App\Filament\Actions\Story\DetachFromCategoriesBulkAction;
 use App\Filament\Actions\Story\DetachFromRatingTagsBulkAction;
+use App\Filament\Actions\Story\DetachFromSeriesBulkAction;
 use App\Filament\Actions\Story\DetachFromTagsBulkAction;
 use App\Filament\Forms\Components\Actions\OpenUrlAction;
 use App\Filament\Resources\StoryResource\Pages;
@@ -116,6 +118,7 @@ class StoryResource extends Resource
             ])
             ->bulkActions([
                 self::getDeleteBulkAction(),
+                self::getSeriesBulkAction(),
                 self::getCategoriesBulkAction(),
                 self::getTagsBulkAction(),
                 self::getRatingTagsBulkAction(),
@@ -702,6 +705,17 @@ class StoryResource extends Resource
                 true: fn(Builder $query) => $query->whereHas('userRead'),
                 false: fn(Builder $query) => $query->whereDoesntHave('userRead'),
             );
+    }
+
+    public static function getSeriesBulkAction(): Tables\Actions\BulkActionGroup
+    {
+        return Tables\Actions\BulkActionGroup::make([
+            AttachToStorySeriesBulkAction::make(),
+            DetachFromSeriesBulkAction::make(),
+        ])
+            ->label('Series')
+            ->icon('heroicon-o-square-3-stack-3d')
+            ->color('success');
     }
 
     public static function getCategoriesBulkAction(): Tables\Actions\BulkActionGroup
