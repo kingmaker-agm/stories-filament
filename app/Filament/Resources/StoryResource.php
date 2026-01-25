@@ -131,7 +131,9 @@ class StoryResource extends Resource
                 self::getTagsFilter(),
                 self::getRatingTagsFilter(),
                 self::getCategoryFilter(),
-            ]);
+            ])
+            ->paginationPageOptions([10, 25, 50, 100, 'all'])
+            ->defaultPaginationPageOption(25);
     }
 
     public static function infolist(Infolist $infolist): Infolist

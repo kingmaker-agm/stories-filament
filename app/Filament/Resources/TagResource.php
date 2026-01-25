@@ -51,9 +51,9 @@ class TagResource extends Resource
                 self::getNameTableColumn(),
                 self::getStoriesCountTableColumn(),
             ])
-            ->filters([
-                //
-            ])
+            ->paginationPageOptions([25, 50, 100, 'all'])
+            ->defaultPaginationPageOption(50)
+            ->defaultSort('primary', 'asc')
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),

@@ -86,9 +86,6 @@ class StorySeriesResource extends Resource
                     ->falseColor('gray'),
                 self::getDescriptionTableColumn(),
             ])
-            ->filters([
-                //
-            ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
@@ -98,7 +95,9 @@ class StorySeriesResource extends Resource
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make()
                     ->requiresConfirmation(),
-            ]);
+            ])
+            ->paginationPageOptions([10, 25, 50, 100, 'all'])
+            ->defaultPaginationPageOption(10);
     }
 
     public static function infolist(Infolist $infolist): Infolist
