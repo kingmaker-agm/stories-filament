@@ -370,7 +370,7 @@ class StoryResource extends Resource
     {
         return Tables\Columns\TextColumn::make('title')
             ->sortable()
-            ->searchable()
+            ->searchable(isGlobal: true, isIndividual: true)
             ->wrap()
             ->limit(100);
     }
@@ -381,7 +381,8 @@ class StoryResource extends Resource
             ->formatStateUsing(fn(?string $state) => empty($state) ? '' : Str::words(strip_tags($state), 30))
             ->visibleFrom('lg')
             ->html()
-            ->wrap();
+            ->wrap()
+            ->searchable(isIndividual: true, isGlobal: false);
     }
 
     public static function getTitleFormField(): Forms\Components\TextInput
